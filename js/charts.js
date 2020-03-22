@@ -37,7 +37,7 @@ function updateGraph(checkbox) {
     country = countries[checkbox.value];
 
     if (checkbox.checked) {
-        var countryData = getCountryData(data, dates, country.state, country.country);
+        var countryData = getCountryData(country.state, country.country);
         var baseColor = colors[country.idx % colors.length]
 
         myChart.data.datasets.push({
