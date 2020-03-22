@@ -28,3 +28,8 @@ watchify js/charts.js -o js/bundle.js
 running in the background.
 
 Then simply open `index.html` locally in your browser.
+
+
+### More Information
+[Chart.js](https://www.chartjs.org/).
+[PapaParse](https://www.papaparse.com/)
