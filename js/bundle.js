@@ -128,6 +128,8 @@ function getCountryData(state, country) {
 
 function showGraph() {
     var ctx = document.getElementById('myChart').getContext('2d');
+    ctx.canvas.width = window.innerWidth * 0.9
+    ctx.canvas.height = window.innerHeight * 0.3
 
     var numbersGermany = getCountryData(null, 'Germany');
     var numbersChina = getCountryData('Hubei', 'China');

@@ -1,0 +1,7 @@
+div.countrySelection {
+  height: 40vh;
+  width: 350px;
+  overflow: scroll;
+  margin: auto;
+  margin-top: 50px;
+}
