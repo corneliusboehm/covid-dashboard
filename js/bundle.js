@@ -107,7 +107,7 @@ function findCountry(row, state, country) {
     return row['Province/State'] === state && row['Country/Region'] === country;
 }
 
-function getCountryData(data, dates, state, country) {
+function getCountryData(state, country) {
     var dataCountry = data.find(row => findCountry(row, state, country));
     return Array.from(dates, x => dataCountry[x]);
 }
@@ -115,15 +115,17 @@ function getCountryData(data, dates, state, country) {
 function showData() {
     var ctx = document.getElementById('myChart').getContext('2d');
 
-    var numbersGermany = getCountryData(data, dates, null, 'Germany');
-    var numbersChina = getCountryData(data, dates, 'Hubei', 'China');
-    var numbersFrance = getCountryData(data, dates, 'France', 'France');
-    var numbersItaly = getCountryData(data, dates, null, 'Italy');
+    var numbersGermany = getCountryData(null, 'Germany');
+    var numbersChina = getCountryData('Hubei', 'China');
+    var numbersFrance = getCountryData('France', 'France');
+    var numbersItaly = getCountryData(null, 'Italy');
+
+    var dateLabels = Array.from(dates, date => new Date(date));
 
     myChart = new chart.Chart(ctx, {
         type: 'line',
         data: {
-            labels: dates,
+            labels: dateLabels,
             datasets: [
                 {
                     label: 'Germany',
@@ -172,6 +174,14 @@ function showData() {
                     top: 0,
                     bottom: 0
                 }
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: 'day'
+                    }
+                }]
             }
         }
     });
