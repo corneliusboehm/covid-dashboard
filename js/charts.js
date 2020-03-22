@@ -1,14 +1,105 @@
 const chart = require('chart.js');
 const Papa = require('papaparse');
+const palette = require('google-palette');
+
+var myChart;
+var data;
+var dates;
+var colors;
 
 Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv", {
 	download: true,
 	header: true,
 	dynamicTyping: true,
 	complete: function(results) {
-		showData(results.data, results.meta);
+	    data = results.data;
+	    dates = results.meta.fields.slice(results.meta.fields.indexOf('1/22/20'), results.meta.fields.length);
+
+	    countries = showCountrySelection(results.data);
+
+	    colors = palette('mpn65', Math.min(countries.length, 65));
+
+		showData();
 	}
 });
+
+
+function hexToRGBA(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+
+    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+}
+
+
+function updateGraph(checkbox) {
+    country = countries[checkbox.value];
+
+    if (checkbox.checked) {
+        var countryData = getCountryData(data, dates, country.state, country.country);
+        var baseColor = colors[country.idx % colors.length]
+
+        myChart.data.datasets.push({
+            label: country.name,
+            data: countryData,
+            fill: false,
+            borderColor: hexToRGBA(baseColor, 0.7),
+            pointBackgroundColor: hexToRGBA(baseColor, 1),
+            pointBorderColor: hexToRGBA(baseColor, 1)
+        });
+    } else {
+        // TODO: Remove entry
+    }
+
+    myChart.update();
+}
+
+
+function showCountrySelection(data) {
+    container = document.getElementById('countrySelection');
+
+    var countries = [];
+    var rowIdx;
+    for (rowIdx in data) {
+        var row = data[rowIdx];
+        state = row['Province/State'];
+        country = row['Country/Region'];
+
+        var name;
+        if (state) {
+            name = state + ', ' + country;
+        } else {
+            name = country;
+        }
+
+        countries.push({
+            state: state,
+            country: country,
+            name: name,
+            idx: rowIdx
+        })
+
+        var div = document.createElement('div');
+
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = name;
+        checkbox.value = rowIdx;
+        checkbox.id = name;
+        checkbox.onclick = function() {updateGraph(this)};
+
+        var label = document.createElement('label')
+        label.htmlFor = name;
+        label.appendChild(document.createTextNode(name));
+
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        container.appendChild(div);
+    }
+
+    return countries;
+}
 
 
 function findCountry(row, state, country) {
@@ -20,18 +111,15 @@ function getCountryData(data, dates, state, country) {
     return Array.from(dates, x => dataCountry[x]);
 }
 
-function showData(data, meta) {
-    console.log(data)
-
+function showData() {
     var ctx = document.getElementById('myChart').getContext('2d');
 
-    var dates = meta.fields.slice(meta.fields.indexOf('1/22/20'), meta.fields.length);
     var numbersGermany = getCountryData(data, dates, null, 'Germany');
     var numbersChina = getCountryData(data, dates, 'Hubei', 'China');
     var numbersFrance = getCountryData(data, dates, 'France', 'France');
     var numbersItaly = getCountryData(data, dates, null, 'Italy');
 
-    var myChart = new chart.Chart(ctx, {
+    myChart = new chart.Chart(ctx, {
         type: 'line',
         data: {
             labels: dates,
