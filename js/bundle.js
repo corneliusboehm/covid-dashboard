@@ -6,7 +6,15 @@ const palette = require('google-palette');
 var myChart;
 var data;
 var dates;
-var colors;
+var colors = palette('mpn65', 65);
+var countries = [];
+
+let defaultCountries = {
+    Germany: null,
+    China: 'Hubei',
+    France: 'France',
+    Italy: null
+}
 
 Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv", {
 	download: true,
@@ -16,11 +24,8 @@ Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/css
 	    data = results.data;
 	    dates = results.meta.fields.slice(results.meta.fields.indexOf('1/22/20'), results.meta.fields.length);
 
-	    countries = showCountrySelection(results.data);
-
-	    colors = palette('mpn65', Math.min(countries.length, 65));
-
-		showData();
+		showGraph();
+	    showCountrySelection(results.data);
 	}
 });
 
@@ -34,33 +39,37 @@ function hexToRGBA(hex, alpha) {
 }
 
 
+function addToGraph(country) {
+    var countryData = getCountryData(country.state, country.country);
+    var baseColor = colors[country.idx % colors.length]
+
+    myChart.data.datasets.push({
+        label: country.name,
+        data: countryData,
+        fill: false,
+        borderColor: hexToRGBA(baseColor, 0.7),
+        pointBackgroundColor: hexToRGBA(baseColor, 1),
+        pointBorderColor: hexToRGBA(baseColor, 1)
+    });
+
+    myChart.update();
+}
+
+
 function updateGraph(checkbox) {
     country = countries[checkbox.value];
 
     if (checkbox.checked) {
-        var countryData = getCountryData(country.state, country.country);
-        var baseColor = colors[country.idx % colors.length]
-
-        myChart.data.datasets.push({
-            label: country.name,
-            data: countryData,
-            fill: false,
-            borderColor: hexToRGBA(baseColor, 0.7),
-            pointBackgroundColor: hexToRGBA(baseColor, 1),
-            pointBorderColor: hexToRGBA(baseColor, 1)
-        });
+        addToGraph(country)
     } else {
         // TODO: Remove entry
     }
-
-    myChart.update();
 }
 
 
 function showCountrySelection(data) {
     container = document.getElementById('countrySelection');
 
-    var countries = [];
     var rowIdx;
     for (rowIdx in data) {
         var row = data[rowIdx];
@@ -74,12 +83,13 @@ function showCountrySelection(data) {
             name = country;
         }
 
-        countries.push({
+        countryDict = {
             state: state,
             country: country,
             name: name,
             idx: rowIdx
-        })
+        }
+        countries.push(countryDict)
 
         var div = document.createElement('div');
 
@@ -97,9 +107,13 @@ function showCountrySelection(data) {
         div.appendChild(checkbox);
         div.appendChild(label);
         container.appendChild(div);
-    }
 
-    return countries;
+        // Check for defaults to be enabled
+        if (country in defaultCountries && defaultCountries[country] === state) {
+            checkbox.checked = true;
+            addToGraph(countryDict);
+        }
+    }
 }
 
 
@@ -112,7 +126,7 @@ function getCountryData(state, country) {
     return Array.from(dates, x => dataCountry[x]);
 }
 
-function showData() {
+function showGraph() {
     var ctx = document.getElementById('myChart').getContext('2d');
 
     var numbersGermany = getCountryData(null, 'Germany');
@@ -126,40 +140,7 @@ function showData() {
         type: 'line',
         data: {
             labels: dateLabels,
-            datasets: [
-                {
-                    label: 'Germany',
-                    data: numbersGermany,
-                    fill: false,
-                    borderColor: 'rgba(255, 99, 132, 0.7)',
-                    pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                    pointBorderColor: 'rgba(255, 99, 132, 1)'
-                },
-                {
-                    label: 'France, France',
-                    data: numbersFrance,
-                    fill: false,
-                    borderColor: 'rgba(54, 162, 235, 0.7)',
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                    pointBorderColor: 'rgba(54, 162, 235, 1)'
-                },
-                {
-                    label: 'Hubei, China',
-                    data: numbersChina,
-                    fill: false,
-                    borderColor: 'rgba(255, 206, 86, 0.7)',
-                    pointBackgroundColor: 'rgba(255, 206, 86, 1)',
-                    pointBorderColor: 'rgba(255, 206, 86, 1)'
-                },
-                {
-                    label: 'Italy',
-                    data: numbersItaly,
-                    fill: false,
-                    borderColor: 'rgba(75, 192, 192, 0.7)',
-                    pointBackgroundColor: 'rgba(75, 192, 192, 1)',
-                    pointBorderColor: 'rgba(75, 192, 192, 1)'
-                }
-            ]
+            datasets: []
         },
         options: {
             title: {
