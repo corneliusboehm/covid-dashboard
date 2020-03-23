@@ -6,7 +6,6 @@ var myChart;
 var data;
 var dates;
 var colors = palette('mpn65', 65);
-var countries = [];
 
 let defaultCountries = {
     Germany: null,
@@ -15,35 +14,45 @@ let defaultCountries = {
     Italy: null
 }
 
-Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv", {
-	download: true,
-	header: true,
-	dynamicTyping: true,
-	complete: function(results) {
-	    data = results.data;
-	    dates = results.meta.fields.slice(results.meta.fields.indexOf('1/22/20'), results.meta.fields.length);
+$(document).ready( function () {
+    Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv", {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+            data = results.data;
+            dates = results.meta.fields.slice(results.meta.fields.indexOf('1/22/20'), results.meta.fields.length);
 
-		showGraph();
-	    showCountrySelection(results.data);
-	}
-});
+            var table = $('#countrySelection').DataTable();
+
+            $('#countrySelection tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('table-primary');
+                selected = $(this).hasClass('table-primary')
+                updateGraph(table.row(this).data(), selected);
+            } );
+
+            showGraph();
+            showCountrySelection(table, results.data);
+        }
+    });
+} );
 
 
 function hexToRGBA(hex, alpha) {
-    var r = parseInt(hex.slice(1, 3), 16),
-        g = parseInt(hex.slice(3, 5), 16),
-        b = parseInt(hex.slice(5, 7), 16);
+    var r = parseInt(hex.slice(0, 2), 16),
+        g = parseInt(hex.slice(2, 4), 16),
+        b = parseInt(hex.slice(4, 6), 16);
 
     return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
 
 
-function addToGraph(country) {
-    var countryData = getCountryData(country.state, country.country);
-    var baseColor = colors[country.idx % colors.length]
+function addToGraph(country, state) {
+    var countryData = getCountryData(state, country);
+    var baseColor = colors[myChart.data.datasets.length % colors.length]
 
     myChart.data.datasets.push({
-        label: country.name,
+        label: country,
         data: countryData,
         fill: false,
         borderColor: hexToRGBA(baseColor, 0.7),
@@ -55,64 +64,31 @@ function addToGraph(country) {
 }
 
 
-function updateGraph(checkbox) {
-    country = countries[checkbox.value];
-
-    if (checkbox.checked) {
-        addToGraph(country)
+function updateGraph(row, selected) {
+    if (selected) {
+        addToGraph(row[0], row[1])
     } else {
         // TODO: Remove entry
     }
 }
 
 
-function showCountrySelection(data) {
-    container = document.getElementById('countrySelection');
-
+function showCountrySelection(table, data) {
     var rowIdx;
     for (rowIdx in data) {
         var row = data[rowIdx];
         state = row['Province/State'];
         country = row['Country/Region'];
 
-        var name;
-        if (state) {
-            name = state + ', ' + country;
-        } else {
-            name = country;
-        }
+        rowNode = table.row.add([country, state]).node();
 
-        countryDict = {
-            state: state,
-            country: country,
-            name: name,
-            idx: rowIdx
-        }
-        countries.push(countryDict)
-
-        var div = document.createElement('div');
-
-        var checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.name = name;
-        checkbox.value = rowIdx;
-        checkbox.id = name;
-        checkbox.onclick = function() {updateGraph(this)};
-
-        var label = document.createElement('label')
-        label.htmlFor = name;
-        label.appendChild(document.createTextNode(name));
-
-        div.appendChild(checkbox);
-        div.appendChild(label);
-        container.appendChild(div);
-
-        // Check for defaults to be enabled
         if (country in defaultCountries && defaultCountries[country] === state) {
-            checkbox.checked = true;
-            addToGraph(countryDict);
+            $(rowNode).addClass('table-primary');
+            addToGraph(country, state);
         }
     }
+
+    table.draw(true)
 }
 
 
