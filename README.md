@@ -34,3 +34,5 @@ Then simply open `index.html` locally in your browser.
 - [Chart.js](https://www.chartjs.org/)
 - [PapaParse](https://www.papaparse.com/)
 - [google-palette](https://github.com/google/palette.js/tree/master)
+- [Bootstrap](https://getbootstrap.com/)
+- [DataTables](https://datatables.net/)
