@@ -61,7 +61,7 @@ function createDataset(country, state) {
     // Create dataset
     let baseColor = colors[colorIdx];
     let displayName = getDisplayName(country, state);
-    let countryData = getCountryData(state, country);
+    let countryData = getCountryData(state, country, 'deaths');
 
     let dataset = {
         label: displayName,

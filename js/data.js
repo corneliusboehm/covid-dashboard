@@ -6,7 +6,6 @@ let selectedCountries = {
     _World: null,
     Germany: null,
     China: 'Hubei',
-    France: null,
     Italy: null,
     US: null
 }
@@ -28,10 +27,10 @@ $(document).ready( function () {
         "scrollY": "300px",
         "scrollCollapse": true,
         "paging": false,
-        "order": [[2, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
-        "columnDefs": [
-            { "visible": false, "targets": 2 }
-        ]
+        "order": [[5, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
+        // "columnDefs": [
+        //     { "visible": false, "targets": 5 }
+        // ]
     } );
 
     $('#countryTable tbody').on( 'click', 'tr', function () {
@@ -124,11 +123,27 @@ function updateHeader() {
 
 
 function updateTableData() {
+    lastDate = data.deaths.dates[data.deaths.dates.length - 1];
     for (const row of data.deaths.data) {
         state = row['Province/State'];
         country = row['Country/Region'];
+        deaths = row[lastDate].toLocaleString('en-US');
 
-        rowNode = table.row.add([country, state, '0']).node();
+        confirmed = getCountryData(state, country, 'confirmed');
+        if (confirmed) {
+            confirmed = confirmed[confirmed.length - 1].toLocaleString('en-US');
+        } else {
+            confirmed = 0;
+        }
+
+        recovered = getCountryData(state, country, 'recovered');
+        if (recovered) {
+            recovered = recovered[recovered.length - 1].toLocaleString('en-US');
+        } else {
+            recovered = 0;
+        }
+
+        rowNode = table.row.add([country, state, confirmed, deaths, recovered, 0]).node();
 
         // Use row().child() for adding children to a row
     }
@@ -154,10 +169,10 @@ function updateTableHighlights() {
 
         if (country in selectedCountries && selectedCountries[country] === state) {
             $(this.node()).addClass('table-primary');
-            rowData[2] = '1';
+            rowData[5] = 1;
         } else {
             $(this.node()).removeClass('table-primary');
-            rowData[2] = '0';
+            rowData[5] = 0;
         }
     })
 
@@ -165,13 +180,16 @@ function updateTableHighlights() {
 }
 
 
-function findCountry(row, state, country) {
-    return row['Province/State'] === state && row['Country/Region'] === country;
-}
-
-
-function getCountryData(state, country) {
+function getCountryData(state, country, category) {
     // TODO: Which category? Get dates from category
-    let dataCountry = data.deaths.data.find(row => findCountry(row, state, country));
-    return Array.from(data.deaths.dates, date => dataCountry[date]);
+    let dataCountry = data[category].data.find(function(row) {
+        return row['Province/State'] === state && row['Country/Region'] === country;
+    } );
+
+    if (dataCountry) {
+        return Array.from(data[category].dates, date => dataCountry[date]);
+    } else {
+        console.log('Data not found: ', state, country, category)
+        return null;
+    }
 }
