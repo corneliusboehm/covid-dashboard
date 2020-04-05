@@ -7,7 +7,7 @@ let datasets = {}
 $(document).ready( function () {
     let ctx = document.getElementById('graph').getContext('2d');
     ctx.canvas.width = window.innerWidth * 0.9
-    ctx.canvas.height = window.innerHeight * 0.3
+    ctx.canvas.height = window.innerHeight * 0.5
 
     graph = new Chart(ctx, {
         type: 'line',
