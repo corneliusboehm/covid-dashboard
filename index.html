@@ -8,14 +8,41 @@
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.css">
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css">
         <link rel="stylesheet" href="css/main.css">
     </head>
 
     <body>
-        <h1>Coronavirus COVID-19 Visualization</h1>
+        <h1>Coronavirus COVID-19 Data Analysis</h1>
 
         <div class="container">
-            <div class="row">
+            <div class="row mt-3">
+                <div class="col-4">
+                    <div class="card text-white bg-danger">
+                        <div class="card-header">Total Infections</div>
+                        <div class="card-body text-center">
+                            <p class="card-text large-text">XXXXX</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-header">Total Deaths</div>
+                        <div class="card-body text-center">
+                            <p class="card-text large-text">XXXXX</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-header">Total Recovered</div>
+                        <div class="card-body text-center">
+                            <p class="card-text large-text">XXXXX</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-body">
@@ -75,7 +102,12 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
         <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.js"></script>
-        <script src="js/bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/google-palette@1.1.0/palette.min.js"></script>
+        <script src="js/utils.js"></script>
+        <script src="js/graph.js"></script>
+        <script src="js/data.js"></script>
 
     </body>
 
