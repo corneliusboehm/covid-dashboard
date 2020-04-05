@@ -27,12 +27,15 @@ $(document).ready( function () {
     table = $('#countryTable').DataTable({
         "scrollY": "300px",
         "scrollCollapse": true,
-        "paging": false
+        "paging": false,
+        "order": [[2, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
+        "columnDefs": [
+            { "visible": false, "targets": 2 }
+        ]
     } );
 
     $('#countryTable tbody').on( 'click', 'tr', function () {
-        $(this).toggleClass('table-primary');
-        let selected = $(this).hasClass('table-primary');
+        let selected = !($(this).hasClass('table-primary'));
         let rowData = table.row(this).data();
         let country = rowData[0];
         let state = rowData[1];
@@ -125,7 +128,7 @@ function updateTableData() {
         state = row['Province/State'];
         country = row['Country/Region'];
 
-        rowNode = table.row.add([country, state]).node();
+        rowNode = table.row.add([country, state, '0']).node();
 
         // Use row().child() for adding children to a row
     }
@@ -151,10 +154,14 @@ function updateTableHighlights() {
 
         if (country in selectedCountries && selectedCountries[country] === state) {
             $(this.node()).addClass('table-primary');
+            rowData[2] = '1';
         } else {
             $(this.node()).removeClass('table-primary');
+            rowData[2] = '0';
         }
     })
+
+    table.rows().invalidate().draw(true);
 }
 
 
