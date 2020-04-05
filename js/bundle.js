@@ -26,7 +26,11 @@ $(document).ready( function () {
             data = results.data;
             dates = results.meta.fields.slice(results.meta.fields.indexOf('1/22/20'), results.meta.fields.length);
 
-            var table = $('#countrySelection').DataTable();
+            var table = $('#countrySelection').DataTable({
+                "scrollY": "300px",
+                "scrollCollapse": true,
+                "paging": false
+            });
 
             $('#countrySelection tbody').on( 'click', 'tr', function () {
                 $(this).toggleClass('table-primary');
