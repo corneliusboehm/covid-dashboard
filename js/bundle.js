@@ -12,14 +12,16 @@ let defaultCountries = {
     Germany: null,
     China: 'Hubei',
     France: 'France',
-    Italy: null
+    Italy: null,
+    US: null
 }
 
 $(document).ready( function () {
-    Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv", {
+    Papa.parse("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv", {
         download: true,
         header: true,
         dynamicTyping: true,
+        skipEmptyLines: true,
         complete: function(results) {
             data = results.data;
             dates = results.meta.fields.slice(results.meta.fields.indexOf('1/22/20'), results.meta.fields.length);
@@ -106,11 +108,6 @@ function showGraph() {
     var ctx = document.getElementById('myChart').getContext('2d');
     ctx.canvas.width = window.innerWidth * 0.9
     ctx.canvas.height = window.innerHeight * 0.3
-
-    var numbersGermany = getCountryData(null, 'Germany');
-    var numbersChina = getCountryData('Hubei', 'China');
-    var numbersFrance = getCountryData('France', 'France');
-    var numbersItaly = getCountryData(null, 'Italy');
 
     var dateLabels = Array.from(dates, date => new Date(date));
 
