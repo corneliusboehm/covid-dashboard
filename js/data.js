@@ -1,10 +1,10 @@
 const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/"
 const firstDate = "1/22/20"
 
-let defaultCountries = {
+let selectedCountries = {
     Germany: null,
     China: 'Hubei',
-    France: 'France',
+    France: null,
     Italy: null,
     US: null
 }
@@ -27,8 +27,18 @@ $(document).ready( function () {
 
     $('#countrySelection tbody').on( 'click', 'tr', function () {
         $(this).toggleClass('table-primary');
-        selected = $(this).hasClass('table-primary')
-        updateGraph(table.row(this).data(), selected);
+        let selected = $(this).hasClass('table-primary')
+        let rowData = table.row(this).data()
+        let country = rowData[0]
+        let state = rowData[1]
+
+        if (selected) {
+            selectedCountries[country] = state
+        } else {
+            delete selectedCountries[country]
+        }
+
+        updateSelected();
     } );
 } );
 
@@ -48,33 +58,53 @@ function loadCSV(key, file) {
                 dates: dates
             };
 
-            // TODO: Don't do this every time
-            initializeGraph(dates);
-            updateTable()
+            updateTableData();
         }
     } );
 }
 
 
-function updateTable() {
-    var rowIdx;
-    // TODO: Iterate over categories or aggregate data first
-    for (rowIdx in data.deaths.data) {
-        var row = data.deaths.data[rowIdx];
-        state = row['Province/State'];
-        country = row['Country/Region'];
+function updateTableData() {
+    if ("deaths" in data && "confirmed" in data && "recovered" in data) {
+        var rowIdx;
+        // TODO: Iterate over categories or aggregate data first
 
-        rowNode = table.row.add([country, state]).node();
+        for (rowIdx in data.deaths.data) {
+            var row = data.deaths.data[rowIdx];
+            state = row['Province/State'];
+            country = row['Country/Region'];
 
-        // Use row().child() for adding children to a row
+            rowNode = table.row.add([country, state]).node();
 
-        if (country in defaultCountries && defaultCountries[country] === state) {
-            $(rowNode).addClass('table-primary');
-            addToGraph(country, state);
+            // Use row().child() for adding children to a row
         }
-    }
 
-    table.draw(true)
+        table.draw(true)
+
+        // Show default selected countries
+        updateSelected()
+    }
+}
+
+
+function updateSelected() {
+    updateTableHighlights();
+    updateGraph(data, selectedCountries);
+}
+
+
+function updateTableHighlights() {
+    table.rows().every(function() {
+        let rowData = this.data()
+        let country = rowData[0]
+        let state = rowData[1]
+
+        if (country in selectedCountries && selectedCountries[country] === state) {
+            $(this.node()).addClass('table-primary');
+        } else {
+            $(this.node()).removeClass('table-primary');
+        }
+    })
 }
 
 
@@ -85,6 +115,6 @@ function findCountry(row, state, country) {
 
 function getCountryData(state, country) {
     // TOOD: Which category? Get dates from category
-    var dataCountry = data.deaths.data.find(row => findCountry(row, state, country));
+    let dataCountry = data.deaths.data.find(row => findCountry(row, state, country));
     return Array.from(data.deaths.dates, x => dataCountry[x]);
 }
