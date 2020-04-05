@@ -5,7 +5,7 @@ let datasets = {}
 
 
 $(document).ready( function () {
-    let ctx = document.getElementById('myChart').getContext('2d');
+    let ctx = document.getElementById('graph').getContext('2d');
     ctx.canvas.width = window.innerWidth * 0.9
     ctx.canvas.height = window.innerHeight * 0.3
 
