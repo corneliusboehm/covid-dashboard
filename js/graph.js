@@ -6,8 +6,7 @@ let datasets = {}
 
 $(document).ready( function () {
     let ctx = document.getElementById('graph').getContext('2d');
-    ctx.canvas.width = window.innerWidth * 0.9
-    ctx.canvas.height = window.innerHeight * 0.5
+    ctx.canvas.height = 400
 
     graph = new Chart(ctx, {
         type: 'line',
@@ -17,14 +16,6 @@ $(document).ready( function () {
                 text: 'Deaths',
                 fontSize: 24
             },
-            layout: {
-                padding: {
-                    left: 50,
-                    right: 50,
-                    top: 0,
-                    bottom: 0
-                }
-            },
             scales: {
                 xAxes: [{
                     type: 'time',
@@ -32,7 +23,8 @@ $(document).ready( function () {
                         unit: 'day'
                     }
                 }]
-            }
+            },
+            maintainAspectRatio: false
         }
     } );
 
