@@ -73,7 +73,7 @@ function getDisplayName(country, state) {
 }
 
 
-function createDataset(country, state, category, absolute) {
+function createDataset(country, state, category, mode) {
     let displayName = getDisplayName(country, state);
     let colorIdx = 0;
 
@@ -97,7 +97,7 @@ function createDataset(country, state, category, absolute) {
 
     // Create dataset
     let baseColor = colors[colorIdx];
-    let countryData = getCountryData(state, country, category, absolute);
+    let countryData = getCountryData(state, country, category, mode);
 
     let dataset = {
         label: displayName,
@@ -117,7 +117,7 @@ function createDataset(country, state, category, absolute) {
 }
 
 
-function updateGraph(data, selectedCountries, selectedCategories, absolute) {
+function updateGraph(data, selectedCountries, selectedCategories, selectedMode) {
     graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
     graph.data.datasets = []
 
@@ -147,10 +147,10 @@ function updateGraph(data, selectedCountries, selectedCategories, absolute) {
             let displayName = getDisplayName(country, state);
 
             if (displayName in datasets && category in datasets[displayName].categories) {
-                // TODO: Check for changed categories or absolute
+                // TODO: Check for changed categories or mode
                 graph.data.datasets.push(datasets[displayName].categories[category]);
             } else {
-                graph.data.datasets.push(createDataset(country, state, category, absolute));
+                graph.data.datasets.push(createDataset(country, state, category, selectedMode));
             }
         }
     }

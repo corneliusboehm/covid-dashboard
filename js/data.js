@@ -12,7 +12,7 @@ let selectedCountries = {
 
 let selectedCategories = ["deaths"];
 
-let absolute = true;
+let selectedMode = 'absolute';
 
 let table;
 let data = {
@@ -100,43 +100,59 @@ $(document).ready( function () {
     } );
 
 
-    // Absolute vs relative radio buttons
+    // Absolute vs relative vs change radio buttons
     $('#radioAbsolute').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
+        if (selectedMode !== 'absolute') {
+            $(this).removeClass('btn-secondary');
+            $(this).addClass('btn-info');
 
-        otherRadio = $('#radioRelative')
-        otherRadio.toggleClass('btn-info');
-        otherRadio.toggleClass('btn-secondary');
+            let radioRelative = $('#radioRelative');
+            let radioChange = $('#radioChange');
+            radioRelative.removeClass('btn-info');
+            radioChange.removeClass('btn-info');
+            radioRelative.addClass('btn-secondary');
+            radioChange.addClass('btn-secondary');
 
-        let selected = ($(this).hasClass('btn-info'));
+            selectedMode = 'absolute';
 
-        if (selected) {
-            absolute = true;
-        } else {
-            absolute = false;
+            updateSelected();
         }
-
-        updateSelected();
     } );
 
     $('#radioRelative').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
+        if (selectedMode !== 'relative') {
+            $(this).removeClass('btn-secondary');
+            $(this).addClass('btn-info');
 
-        otherRadio = $('#radioAbsolute')
-        otherRadio.toggleClass('btn-info');
-        otherRadio.toggleClass('btn-secondary');
+            let radioAbsolute = $('#radioAbsolute');
+            let radioChange = $('#radioChange');
+            radioAbsolute.removeClass('btn-info');
+            radioChange.removeClass('btn-info');
+            radioAbsolute.addClass('btn-secondary');
+            radioChange.addClass('btn-secondary');
 
-        let selected = ($(this).hasClass('btn-info'));
+            selectedMode = 'relative';
 
-        if (selected) {
-            absolute = false;
-        } else {
-            absolute = true;
+            updateSelected();
         }
+    } );
 
-        updateSelected();
+    $('#radioChange').click( function () {
+        if (selectedMode !== 'change') {
+            $(this).removeClass('btn-secondary');
+            $(this).addClass('btn-info');
+
+            let radioAbsolute = $('#radioAbsolute');
+            let radioRelative = $('#radioRelative');
+            radioAbsolute.removeClass('btn-info');
+            radioRelative.removeClass('btn-info');
+            radioAbsolute.addClass('btn-secondary');
+            radioRelative.addClass('btn-secondary');
+
+            selectedMode = 'change';
+
+            updateSelected();
+        }
     } );
 } );
 
@@ -249,7 +265,7 @@ function updateTableData() {
 function updateSelected() {
     updateTableHighlights();
     updateButtons();
-    updateGraph(data, selectedCountries, selectedCategories, absolute);
+    updateGraph(data, selectedCountries, selectedCategories, selectedMode);
 }
 
 
@@ -277,7 +293,7 @@ function updateButtons() {
 }
 
 
-function getCountryData(state, country, category, absolute) {
+function getCountryData(state, country, category, mode) {
     let dataCountry = data[category].data.find(function(row) {
         return row['Province/State'] === state && row['Country/Region'] === country;
     } );
