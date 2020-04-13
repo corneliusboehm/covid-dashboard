@@ -1,6 +1,6 @@
-const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/"
-const firstDate = "1/22/20"
-const categories = ["deaths", "confirmed", "recovered"]
+const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/";
+const firstDate = "1/22/20";
+const categories = ["deaths", "confirmed", "recovered"];
 
 let selectedCountries = {
     _World: null,
@@ -8,7 +8,11 @@ let selectedCountries = {
     China: 'Hubei',
     Italy: null,
     US: null
-}
+};
+
+let selectedCategories = ["deaths"];
+
+let absolute = true;
 
 let table;
 let data = {
@@ -43,6 +47,93 @@ $(document).ready( function () {
             selectedCountries[country] = state;
         } else {
             delete selectedCountries[country];
+        }
+
+        updateSelected();
+    } );
+
+
+    // Category buttons
+    $('#buttonConfirmed').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+        let selected = ($(this).hasClass('btn-info'));
+        const value = 'confirmed'
+
+        if (selected) {
+            selectedCategories.push(value);
+        } else {
+            selectedCategories = selectedCategories.filter(category => category !== value)
+        }
+
+        updateSelected();
+    } );
+
+    $('#buttonDeaths').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+        let selected = ($(this).hasClass('btn-info'));
+        const value = 'deaths'
+
+        if (selected) {
+            selectedCategories.push(value);
+        } else {
+            selectedCategories = selectedCategories.filter(category => category !== value)
+        }
+
+        updateSelected();
+    } );
+
+    $('#buttonRecovered').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+        let selected = ($(this).hasClass('btn-info'));
+        const value = 'recovered'
+
+        if (selected) {
+            selectedCategories.push(value);
+        } else {
+            selectedCategories = selectedCategories.filter(category => category !== value)
+        }
+
+        updateSelected();
+    } );
+
+
+    // Absolute vs relative radio buttons
+    $('#radioAbsolute').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+
+        otherRadio = $('#radioRelative')
+        otherRadio.toggleClass('btn-info');
+        otherRadio.toggleClass('btn-secondary');
+
+        let selected = ($(this).hasClass('btn-info'));
+
+        if (selected) {
+            absolute = true;
+        } else {
+            absolute = false;
+        }
+
+        updateSelected();
+    } );
+
+    $('#radioRelative').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+
+        otherRadio = $('#radioAbsolute')
+        otherRadio.toggleClass('btn-info');
+        otherRadio.toggleClass('btn-secondary');
+
+        let selected = ($(this).hasClass('btn-info'));
+
+        if (selected) {
+            absolute = false;
+        } else {
+            absolute = true;
         }
 
         updateSelected();
@@ -157,7 +248,8 @@ function updateTableData() {
 
 function updateSelected() {
     updateTableHighlights();
-    updateGraph(data, selectedCountries);
+    updateButtons();
+    updateGraph(data, selectedCountries, selectedCategories, absolute);
 }
 
 
@@ -180,8 +272,12 @@ function updateTableHighlights() {
 }
 
 
-function getCountryData(state, country, category) {
-    // TODO: Which category? Get dates from category
+function updateButtons() {
+    // TODO
+}
+
+
+function getCountryData(state, country, category, absolute) {
     let dataCountry = data[category].data.find(function(row) {
         return row['Province/State'] === state && row['Country/Region'] === country;
     } );
