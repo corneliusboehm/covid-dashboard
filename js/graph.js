@@ -1,4 +1,9 @@
 const colors = palette('mpn65', 65);
+const lineStyles = {
+    deaths: [],
+    confirmed: [5, 2],
+    recovered: [1, 1]
+};
 
 let graph;
 let datasets = {}
@@ -11,6 +16,13 @@ $(document).ready( function () {
     graph = new Chart(ctx, {
         type: 'line',
         options: {
+            legend: {
+                display: true,
+                labels: {
+                    generateLabels: generateUniqueLabels
+                },
+                onClick: null
+            },
             scales: {
                 xAxes: [{
                     type: 'time',
@@ -25,6 +37,31 @@ $(document).ready( function () {
 
     $('[data-toggle="tooltip"]').tooltip()
 } );
+
+
+function generateUniqueLabels(x) {
+    let labels = [];
+
+    for (const name in datasets) {
+        let baseColor = colors[datasets[name].colorIdx];
+
+        labels .push({
+            text: name,
+            fillStyle: hexToRGBA(baseColor, 0.7),
+            hidden: false,
+            lineCap: 'butt',
+            lineDash: [],
+            lineDashOffset: 0,
+            lineJoin: 'miter',
+            lineWidth: 3,
+            strokeStyle: hexToRGBA(baseColor, 0.7),
+            pointStyle: null,
+            rotation: null
+        });
+    }
+
+    return labels;
+}
 
 
 function getDisplayName(country, state) {
@@ -68,7 +105,10 @@ function createDataset(country, state, category, absolute) {
         fill: false,
         borderColor: hexToRGBA(baseColor, 0.7),
         pointBackgroundColor: hexToRGBA(baseColor, 1),
-        pointBorderColor: hexToRGBA(baseColor, 1)
+        pointBorderColor: hexToRGBA(baseColor, 1),
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        borderDash: lineStyles[category]
     };
 
     datasets[displayName].categories[category] = dataset;
@@ -86,20 +126,15 @@ function updateGraph(data, selectedCountries, selectedCategories, absolute) {
                                   country => getDisplayName(country, selectedCountries[country]));
     for (const name in datasets) {
         if (!displayNames.includes(name)) {
-            console.log('Removing ' + name);
             delete datasets[name];
         } else {
             for (const category in datasets[name].categories) {
                 if (!selectedCategories.includes(category)) {
-                    console.log('Removing ' + category + ' of ' + name);
                     delete datasets[name].categories[category];
                 }
             }
 
-            console.log(datasets[name]);
-
             if (jQuery.isEmptyObject(datasets[name].categories)) {
-                console.log('Removing empty ' + name);
                 delete datasets[name];
             }
         }
@@ -115,7 +150,6 @@ function updateGraph(data, selectedCountries, selectedCategories, absolute) {
                 // TODO: Check for changed categories or absolute
                 graph.data.datasets.push(datasets[displayName].categories[category]);
             } else {
-                console.log('Creating ' + displayName + '.' + category);
                 graph.data.datasets.push(createDataset(country, state, category, absolute));
             }
         }
