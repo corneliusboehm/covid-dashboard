@@ -14,6 +14,8 @@ let selectedCategories = ["deaths"];
 
 let selectedMode = 'absolute';
 
+let aligned = false;
+
 let table;
 let data = {
     total: {},
@@ -107,11 +109,14 @@ $(document).ready( function () {
             $(this).addClass('btn-info');
 
             let radioRelative = $('#radioRelative');
-            let radioChange = $('#radioChange');
+            let radioChangeAbsolute = $('#radioChangeAbsolute');
+            let radioChangeRelative = $('#radioChangeRelative');
             radioRelative.removeClass('btn-info');
-            radioChange.removeClass('btn-info');
+            radioChangeAbsolute.removeClass('btn-info');
+            radioChangeRelative.removeClass('btn-info');
             radioRelative.addClass('btn-secondary');
-            radioChange.addClass('btn-secondary');
+            radioChangeAbsolute.addClass('btn-secondary');
+            radioChangeRelative.addClass('btn-secondary');
 
             selectedMode = 'absolute';
 
@@ -125,11 +130,14 @@ $(document).ready( function () {
             $(this).addClass('btn-info');
 
             let radioAbsolute = $('#radioAbsolute');
-            let radioChange = $('#radioChange');
+            let radioChangeAbsolute = $('#radioChangeAbsolute');
+            let radioChangeRelative = $('#radioChangeRelative');
             radioAbsolute.removeClass('btn-info');
-            radioChange.removeClass('btn-info');
+            radioChangeAbsolute.removeClass('btn-info');
+            radioChangeRelative.removeClass('btn-info');
             radioAbsolute.addClass('btn-secondary');
-            radioChange.addClass('btn-secondary');
+            radioChangeAbsolute.addClass('btn-secondary');
+            radioChangeRelative.addClass('btn-secondary');
 
             selectedMode = 'relative';
 
@@ -137,22 +145,56 @@ $(document).ready( function () {
         }
     } );
 
-    $('#radioChange').click( function () {
-        if (selectedMode !== 'change') {
+    $('#radioChangeAbsolute').click( function () {
+        if (selectedMode !== 'change-absolute') {
             $(this).removeClass('btn-secondary');
             $(this).addClass('btn-info');
 
             let radioAbsolute = $('#radioAbsolute');
             let radioRelative = $('#radioRelative');
+            let radioChangeRelative = $('#radioChangeRelative');
             radioAbsolute.removeClass('btn-info');
             radioRelative.removeClass('btn-info');
+            radioChangeRelative.removeClass('btn-info');
             radioAbsolute.addClass('btn-secondary');
             radioRelative.addClass('btn-secondary');
+            radioChangeRelative.addClass('btn-secondary');
 
-            selectedMode = 'change';
+            selectedMode = 'change-absolute';
 
             updateSelected();
         }
+    } );
+
+    $('#radioChangeRelative').click( function () {
+        if (selectedMode !== 'change-relative') {
+            $(this).removeClass('btn-secondary');
+            $(this).addClass('btn-info');
+
+            let radioAbsolute = $('#radioAbsolute');
+            let radioRelative = $('#radioRelative');
+            let radioChangeAbsolute = $('#radioChangeAbsolute');
+            radioAbsolute.removeClass('btn-info');
+            radioRelative.removeClass('btn-info');
+            radioChangeAbsolute.removeClass('btn-info');
+            radioAbsolute.addClass('btn-secondary');
+            radioRelative.addClass('btn-secondary');
+            radioChangeAbsolute.addClass('btn-secondary');
+
+            selectedMode = 'change-relative';
+
+            updateSelected();
+        }
+    } );
+
+
+    // Aligned button
+    $('#buttonAligned').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+        aligned = ($(this).hasClass('btn-info'));
+
+        updateSelected();
     } );
 } );
 
