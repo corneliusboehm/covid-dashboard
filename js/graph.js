@@ -29,6 +29,9 @@ $(document).ready( function () {
                     time: {
                         unit: 'day'
                     }
+                }],
+                yAxes: [{
+                    type: 'linear'
                 }]
             },
             maintainAspectRatio: false
@@ -117,9 +120,16 @@ function createDataset(country, state, category, mode) {
 }
 
 
-function updateGraph(data, selectedCountries, selectedCategories, selectedMode) {
+function updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned) {
     graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
     graph.data.datasets = []
+
+    // Apply scale
+    if (logScale) {
+        graph.options.scales.yAxes[0].type = 'logarithmic';
+    } else {
+        graph.options.scales.yAxes[0].type = 'linear';
+    }
 
     // Remove old datasets
     let displayNames = Array.from(Object.keys(selectedCountries),

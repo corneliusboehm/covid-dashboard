@@ -10,6 +10,8 @@ let selectedCountries = {
     US: null
 };
 
+let logScale = false;
+
 let selectedCategories = ["deaths"];
 
 let selectedMode = 'absolute';
@@ -50,6 +52,16 @@ $(document).ready( function () {
         } else {
             delete selectedCountries[country];
         }
+
+        updateSelected();
+    } );
+
+
+    // Log-scale button
+    $('#buttonLog').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+        logScale = ($(this).hasClass('btn-info'));
 
         updateSelected();
     } );
@@ -307,7 +319,7 @@ function updateTableData() {
 function updateSelected() {
     updateTableHighlights();
     updateButtons();
-    updateGraph(data, selectedCountries, selectedCategories, selectedMode);
+    updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned);
 }
 
 
