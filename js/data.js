@@ -347,15 +347,52 @@ function updateButtons() {
 }
 
 
-function getCountryData(state, country, category, mode) {
+function getCountryData(state, country, category, mode, aligned) {
     let dataCountry = data[category].data.find(function(row) {
         return row['Province/State'] === state && row['Country/Region'] === country;
     } );
 
-    if (dataCountry) {
-        return Array.from(data[category].dates, date => dataCountry[date]);
-    } else {
+    if (!dataCountry) {
         console.log('Data not found: ', state, country, category)
         return null;
+    }
+
+    let dataArray = Array.from(data[category].dates, date => dataCountry[date]);
+    let dataArrayBefore;
+
+    switch (mode) {
+        case 'absolute':
+            return dataArray;
+
+        case 'relative':
+            // TODO: Implement
+            return null;
+
+        case 'change-absolute':
+            dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
+            dataArrayBefore.unshift(0);
+            return tf.sub(tf.tensor(dataArray), tf.tensor(dataArrayBefore)).arraySync();
+
+        case 'change-relative':
+            dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
+            dataArrayBefore.unshift(0);
+            let dataTensor = tf.tensor(dataArray);
+            let dataTensorBefore = tf.tensor(dataArrayBefore);
+
+            let min = 0;
+            for (v of dataArray) {
+                if (min == 0 || (v > 0 && v < min)) {
+                    min = v;
+                }
+            }
+            if (min == 0) {
+                min = 1;
+            }
+            let dataTensorBeforeFilled = tf.tensor(dataArrayBefore.map(x => x == 0 ? min : x));
+
+            return tf.div(tf.sub(dataTensor, dataTensorBefore), dataTensorBeforeFilled).arraySync();
+
+        default:
+            return null;
     }
 }

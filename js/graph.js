@@ -76,7 +76,7 @@ function getDisplayName(country, state) {
 }
 
 
-function createDataset(country, state, category, mode) {
+function createDataset(country, state, category, mode, aligned) {
     let displayName = getDisplayName(country, state);
     let colorIdx = 0;
 
@@ -92,7 +92,8 @@ function createDataset(country, state, category, mode) {
 
         datasets[displayName] = {
             categories: {},
-            colorIdx: colorIdx
+            colorIdx: colorIdx,
+            mode: mode
         };
     } else {
         colorIdx = datasets[displayName].colorIdx;
@@ -100,7 +101,7 @@ function createDataset(country, state, category, mode) {
 
     // Create dataset
     let baseColor = colors[colorIdx];
-    let countryData = getCountryData(state, country, category, mode);
+    let countryData = getCountryData(state, country, category, mode, aligned);
 
     let dataset = {
         label: displayName,
@@ -117,6 +118,18 @@ function createDataset(country, state, category, mode) {
     datasets[displayName].categories[category] = dataset;
 
     return dataset;
+}
+
+
+function updateDataset(country, state, mode, aligned) {
+    let displayName = getDisplayName(country, state);
+    let dataset = datasets[displayName];
+
+    for (const category in dataset.categories) {
+        dataset.categories[category].data = getCountryData(state, country, category, mode, aligned);
+    }
+
+    dataset.mode = mode;
 }
 
 
@@ -151,16 +164,21 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
     }
 
     // Add new datasets
-    for (const category of selectedCategories) {
-        for (const country in selectedCountries) {
-            let state = selectedCountries[country];
-            let displayName = getDisplayName(country, state);
+    for (const country in selectedCountries) {
+        let state = selectedCountries[country];
+        let displayName = getDisplayName(country, state);
 
+        // Check for correct mode
+        if (displayName in datasets && datasets[displayName].mode !== selectedMode) {
+            updateDataset(country, state, selectedMode, aligned);
+        }
+
+        // Check for categories
+        for (const category of selectedCategories) {
             if (displayName in datasets && category in datasets[displayName].categories) {
-                // TODO: Check for changed categories or mode
                 graph.data.datasets.push(datasets[displayName].categories[category]);
             } else {
-                graph.data.datasets.push(createDataset(country, state, category, selectedMode));
+                graph.data.datasets.push(createDataset(country, state, category, selectedMode, aligned));
             }
         }
     }
