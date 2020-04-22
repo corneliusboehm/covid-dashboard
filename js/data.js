@@ -66,15 +66,35 @@ $(document).ready( function () {
 
     // Initialize country selection table
     table = $('#countryTable').DataTable({
-        "scrollX": true,
-        "scrollY": "300px",
-        "scrollCollapse": true,
-        "paging": false,
-        "order": [[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
-        "columnDefs": [
+        scrollX: true,
+        scrollY: "300px",
+        scrollCollapse: true,
+        paging: false,
+        order: [[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
+        columnDefs: [
             { "visible": false, "targets": 8 }
+        ],
+        aoColumns: [
+            null,
+            null,
+            {orderSequence: ['desc', 'asc']},
+            {orderSequence: ['desc', 'asc']},
+            {orderSequence: ['desc', 'asc']},
+            {orderSequence: ['desc', 'asc']},
+            {orderSequence: ['desc', 'asc']},
+            {orderSequence: ['desc', 'asc']},
+            null
+        ],
+        buttons: [
+            {
+                text: 'Show selected entries',
+                action: function ( e, dt, node, config ) {
+                    table.order([[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]]).draw();
+                }
+            }
         ]
     } );
+    table.buttons().container().appendTo( '#countryTable_wrapper .col-md-6:eq(0)' );
 
     $('#countryTable tbody').on( 'click', 'tr', function () {
         let selected = !($(this).hasClass('table-primary'));
