@@ -23,21 +23,55 @@ let data = {
     total: {},
     trend: {}
 };
+let population;
+
+let populationNameDict = {
+    'Bolivia': 'Bolivia (Plurinational State of)',
+    'Brunei': 'Brunei Darussalam',
+    'Burma': 'Myanmar',
+    'Congo (Brazzaville)': 'Congo',
+    'Congo (Kinshasa)': 'Congo (Democratic Republic of the)',
+    'Cote d\'Ivoire': 'Côte d\'Ivoire',
+    'Czechia': 'Czech Republic',
+    'Eswatini': 'Swaziland',
+    'Iran': 'Iran (Islamic Republic of)',
+    'Korea, South': 'Korea (Republic of)',
+    'Kosovo': 'Republic of Kosovo',
+    'Laos': 'Lao People\'s Democratic Republic',
+    'Moldova': 'Moldova (Republic of)',
+    'North Macedonia': 'Macedonia (the former Yugoslav Republic of)',
+    'Russia': 'Russian Federation',
+    'Syria': 'Syrian Arab Republic',
+    'Taiwan*': 'Taiwan',
+    'Tanzania': 'Tanzania, United Republic of',
+    'United Kingdom': 'United Kingdom of Great Britain and Northern Ireland',
+    'US': 'United States of America',
+    'Venezuela': 'Venezuela (Bolivarian Republic of)',
+    'Vietnam': 'Viet Nam',
+    'West Bank and Gaza': 'Palestine, State of'
+}
 
 
 $(document).ready( function () {
+    // Load COVID data
     for (const category of categories) {
         loadCSV(category, "time_series_covid19_" + category + "_global.csv");
     }
+
+    // Load population data
+    $.getJSON('https://restcountries.eu/rest/v2/all?fields=name;population', function(populationData) {
+        population = populationData;
+        updateData();
+    } );
 
     // Initialize country selection table
     table = $('#countryTable').DataTable({
         "scrollY": "300px",
         "scrollCollapse": true,
         "paging": false,
-        "order": [[5, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
+        "order": [[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
         // "columnDefs": [
-        //     { "visible": false, "targets": 5 }
+        //     { "visible": false, "targets": 8 }
         // ]
     } );
 
@@ -233,7 +267,7 @@ function loadCSV(category, file) {
 
 
 function updateData() {
-    if (categories.every(category => category in data)) {
+    if (categories.every(category => category in data) && population) {
         aggregateData();
         updateHeader();
         updateTableData();
@@ -257,6 +291,15 @@ function aggregateData() {
         globalData['Province/State'] = null;
         globalData['Country/Region'] = '_World';
         categoryData.data.push(globalData);
+
+        let globalPopulation = 0;
+        for (const entry of population) {
+            globalPopulation += entry.population
+        }
+        population.push({
+            name: '_World',
+            population: globalPopulation
+        });
 
         // Save total
         data.total[category] = globalData[dates[dates.length - 1]];
@@ -284,29 +327,66 @@ function updateHeader() {
 
 
 function updateTableData() {
-    lastDate = data.deaths.dates[data.deaths.dates.length - 1];
+    let lastDate = data.deaths.dates[data.deaths.dates.length - 1];
     for (const row of data.deaths.data) {
-        state = row['Province/State'];
-        country = row['Country/Region'];
-        deaths = row[lastDate].toLocaleString('en-US');
+        let state = row['Province/State'];
+        let country = row['Country/Region'];
 
-        confirmed = getCountryData(state, country, 'confirmed');
-        if (confirmed) {
-            confirmed = confirmed[confirmed.length - 1].toLocaleString('en-US');
+        let popName = populationNameDict.hasOwnProperty(country) ? populationNameDict[country] : country;
+        let pop = population.find(function(entry) {
+            // TODO: How to handle states?
+            return entry.name === popName;
+        } );
+
+        if (pop != null) {
+            pop = pop.population;
+        } else {
+            console.log('Population data not found: ', country);
+        }
+
+        let deaths = row[lastDate];
+        let deathsRelative = '';
+        if (pop != null) {
+            deathsRelative = Math.round((deaths / pop) * 10000) / 100 + '%';
+        }
+
+        let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false);
+        let confirmedRelative = '';
+        if (confirmed != null) {
+            confirmed = confirmed[confirmed.length - 1];
+
+            if (pop != null) {
+                confirmedRelative = Math.round((confirmed / pop) * 10000) / 100 + '%';
+            }
         } else {
             confirmed = 0;
         }
 
-        recovered = getCountryData(state, country, 'recovered');
-        if (recovered) {
-            recovered = recovered[recovered.length - 1].toLocaleString('en-US');
+        let recovered = getCountryData(state, country, 'recovered', 'absolute', false);
+        let recoveredRelative = ''
+        if (recovered != null) {
+            recovered = recovered[recovered.length - 1];
+
+            if (pop != null) {
+                recoveredRelative = Math.round((recovered / pop) * 10000) / 100 + '%';
+            }
         } else {
             recovered = 0;
         }
 
-        rowNode = table.row.add([country, state, confirmed, deaths, recovered, 0]).node();
+        rowNode = table.row.add([
+            country,
+            state,
+            confirmed.toLocaleString('en-US'),
+            deaths.toLocaleString('en-US'),
+            recovered.toLocaleString('en-US'),
+            confirmedRelative,
+            deathsRelative,
+            recoveredRelative,
+            0
+        ]).node();
 
-        // Use row().child() for adding children to a row
+        // TODO: Use row().child() for adding children to a row
     }
 
     table.draw(true);
@@ -331,10 +411,10 @@ function updateTableHighlights() {
 
         if (country in selectedCountries && selectedCountries[country] === state) {
             $(this.node()).addClass('table-primary');
-            rowData[5] = 1;
+            rowData[8] = 1;
         } else {
             $(this.node()).removeClass('table-primary');
-            rowData[5] = 0;
+            rowData[8] = 0;
         }
     })
 

@@ -14,3 +14,4 @@ No installation necessary, simply open `index.html` in your browser.
 - [google-palette](https://github.com/google/palette.js/tree/master)
 - [Bootstrap](https://getbootstrap.com/)
 - [DataTables](https://datatables.net/)
+- [REST Countries](https://restcountries.eu/)
