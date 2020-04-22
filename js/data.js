@@ -352,18 +352,7 @@ function updateTableData() {
     for (const row of data.deaths.data) {
         let state = row['Province/State'];
         let country = row['Country/Region'];
-
-        let popName = populationNameDict.hasOwnProperty(country) ? populationNameDict[country] : country;
-        let pop = population.find(function(entry) {
-            // TODO: How to handle states?
-            return entry.name === popName;
-        } );
-
-        if (pop != null) {
-            pop = pop.population;
-        } else {
-            console.log('Population data not found: ', country);
-        }
+        let pop = getPopulation(country);
 
         let deaths = row[lastDate];
         let deathsRelative = '';
@@ -410,10 +399,9 @@ function updateTableData() {
         // TODO: Use row().child() for adding children to a row
     }
 
-    table.draw(true);
-
     // Show default selected countries
     updateSelected();
+    table.draw(true);
 }
 
 
@@ -439,12 +427,28 @@ function updateTableHighlights() {
         }
     })
 
-    table.rows().invalidate().draw(true);
+    table.rows().invalidate();
 }
 
 
 function updateButtons() {
     // TODO
+}
+
+
+function getPopulation(country) {
+    let popName = populationNameDict.hasOwnProperty(country) ? populationNameDict[country] : country;
+    let pop = population.find(function(entry) {
+        // TODO: How to handle states?
+        return entry.name === popName;
+    } );
+
+    if (pop != null) {
+        return pop.population;
+    } else {
+        console.log('Population data not found: ', country);
+        return null;
+    }
 }
 
 
@@ -466,8 +470,8 @@ function getCountryData(state, country, category, mode, aligned) {
             return dataArray;
 
         case 'relative':
-            // TODO: Implement
-            return null;
+            let pop = getPopulation(country)
+            return tf.div(tf.tensor(dataArray), pop).arraySync();
 
         case 'change-absolute':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
