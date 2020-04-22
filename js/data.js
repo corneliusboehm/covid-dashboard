@@ -66,13 +66,14 @@ $(document).ready( function () {
 
     // Initialize country selection table
     table = $('#countryTable').DataTable({
+        "scrollX": true,
         "scrollY": "300px",
         "scrollCollapse": true,
         "paging": false,
         "order": [[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
-        // "columnDefs": [
-        //     { "visible": false, "targets": 8 }
-        // ]
+        "columnDefs": [
+            { "visible": false, "targets": 8 }
+        ]
     } );
 
     $('#countryTable tbody').on( 'click', 'tr', function () {
