@@ -464,19 +464,23 @@ function getCountryData(state, country, category, mode, aligned) {
 
     let dataArray = Array.from(data[category].dates, date => dataCountry[date]);
     let dataArrayBefore;
+    let output;
 
     switch (mode) {
         case 'absolute':
-            return dataArray;
+            output = dataArray;
+            break;
 
         case 'relative':
             let pop = getPopulation(country)
-            return tf.div(tf.tensor(dataArray), pop).arraySync();
+            output = tf.div(tf.tensor(dataArray), pop).arraySync();
+            break;
 
         case 'change-absolute':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
             dataArrayBefore.unshift(0);
-            return tf.sub(tf.tensor(dataArray), tf.tensor(dataArrayBefore)).arraySync();
+            output = tf.sub(tf.tensor(dataArray), tf.tensor(dataArrayBefore)).arraySync();
+            break;
 
         case 'change-relative':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
@@ -495,9 +499,25 @@ function getCountryData(state, country, category, mode, aligned) {
             }
             let dataTensorBeforeFilled = tf.tensor(dataArrayBefore.map(x => x == 0 ? min : x));
 
-            return tf.div(tf.sub(dataTensor, dataTensorBefore), dataTensorBeforeFilled).arraySync();
+            output = tf.div(tf.sub(dataTensor, dataTensorBefore), dataTensorBeforeFilled).arraySync();
+            break;
 
         default:
             return null;
     }
+
+    if (aligned) {
+        let deathData = getCountryData(state, country, 'deaths', 'absolute', false);
+        let alignmentIndex = deathData.findIndex(function(value) {
+            return value >= 10;
+        } );
+
+        if (alignmentIndex >= 0) {
+            output = output.slice(alignmentIndex);
+        } else {
+            output = [];
+        }
+    }
+
+    return output;
 }

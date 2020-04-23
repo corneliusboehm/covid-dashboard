@@ -28,6 +28,10 @@ $(document).ready( function () {
                     type: 'time',
                     time: {
                         unit: 'day'
+                    },
+                    scaleLabel: {
+                        display: false,
+                        labelString: '# of days after 10th death case'
                     }
                 }],
                 yAxes: [{
@@ -93,7 +97,8 @@ function createDataset(country, state, category, mode, aligned) {
         datasets[displayName] = {
             categories: {},
             colorIdx: colorIdx,
-            mode: mode
+            mode: mode,
+            aligned: aligned
         };
     } else {
         colorIdx = datasets[displayName].colorIdx;
@@ -130,12 +135,12 @@ function updateDataset(country, state, mode, aligned) {
     }
 
     dataset.mode = mode;
+    dataset.aligned = aligned;
 }
 
 
 function updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned) {
-    graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
-    graph.data.datasets = []
+    graph.data.datasets = [];
 
     // Apply scale
     if (logScale) {
@@ -169,7 +174,9 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
         let displayName = getDisplayName(country, state);
 
         // Check for correct mode
-        if (displayName in datasets && datasets[displayName].mode !== selectedMode) {
+        if (displayName in datasets
+            && (datasets[displayName].mode !== selectedMode || datasets[displayName].aligned !== aligned))
+        {
             updateDataset(country, state, selectedMode, aligned);
         }
 
@@ -181,6 +188,25 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
                 graph.data.datasets.push(createDataset(country, state, category, selectedMode, aligned));
             }
         }
+    }
+
+    // Change labels for aligned mode
+    if (aligned) {
+        let maxLen = 0;
+        for (const dataset of Object.values(datasets)) {
+            for (const category of Object.values(dataset.categories)) {
+                if (category.data.length > maxLen) {
+                    maxLen = category.data.length;
+                }
+            }
+        }
+        graph.options.scales.xAxes[0].type = 'category';
+        graph.options.scales.xAxes[0].scaleLabel.display = true;
+        graph.data.labels = [...Array(maxLen).keys()];
+    } else {
+        graph.options.scales.xAxes[0].type = 'time';
+        graph.options.scales.xAxes[0].scaleLabel.display = false;
+        graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
     }
 
     graph.update();
