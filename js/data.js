@@ -2,6 +2,7 @@ const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/m
 const firstDate = "1/22/20";
 const categories = ["deaths", "confirmed", "recovered"];
 
+// Table status
 let selectedCountries = {
     _World: null,
     Germany: null,
@@ -10,14 +11,14 @@ let selectedCountries = {
     US: null
 };
 
+// Button group status
 let logScale = false;
-
 let selectedCategories = ["deaths"];
-
 let selectedMode = 'absolute';
-
 let aligned = false;
+let smoothed = false;
 
+// Data
 let table;
 let data = {
     total: {},
@@ -263,6 +264,16 @@ $(document).ready( function () {
 
         updateSelected();
     } );
+
+
+    // Smoothed button
+    $('#buttonSmoothed').click( function () {
+        $(this).toggleClass('btn-info');
+        $(this).toggleClass('btn-secondary');
+        smoothed = ($(this).hasClass('btn-info'));
+
+        updateSelected();
+    } );
 } );
 
 
@@ -360,7 +371,7 @@ function updateTableData() {
             deathsRelative = Math.round((deaths / pop) * 10000) / 100 + '%';
         }
 
-        let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false);
+        let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false, false);
         let confirmedRelative = '';
         if (confirmed != null) {
             confirmed = confirmed[confirmed.length - 1];
@@ -372,7 +383,7 @@ function updateTableData() {
             confirmed = 0;
         }
 
-        let recovered = getCountryData(state, country, 'recovered', 'absolute', false);
+        let recovered = getCountryData(state, country, 'recovered', 'absolute', false, false);
         let recoveredRelative = ''
         if (recovered != null) {
             recovered = recovered[recovered.length - 1];
@@ -408,7 +419,7 @@ function updateTableData() {
 function updateSelected() {
     updateTableHighlights();
     updateButtons();
-    updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned);
+    updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned, smoothed);
 }
 
 
@@ -452,7 +463,7 @@ function getPopulation(country) {
 }
 
 
-function getCountryData(state, country, category, mode, aligned) {
+function getCountryData(state, country, category, mode, aligned, smoothed) {
     let dataCountry = data[category].data.find(function(row) {
         return row['Province/State'] === state && row['Country/Region'] === country;
     } );
@@ -506,8 +517,18 @@ function getCountryData(state, country, category, mode, aligned) {
             return null;
     }
 
+    if (smoothed) {
+        let newOutput = [];
+        for (idx = 3; idx < output.length - 3; idx++) {
+            const sum = output.slice(idx - 3, idx + 4).reduce((a, b) => a + b, 0)
+            newOutput.push(sum / 7);
+        }
+
+        output = newOutput;
+    }
+
     if (aligned) {
-        let deathData = getCountryData(state, country, 'deaths', 'absolute', false);
+        let deathData = getCountryData(state, country, 'deaths', 'absolute', false, smoothed);
         let alignmentIndex = deathData.findIndex(function(value) {
             return value >= 10;
         } );
