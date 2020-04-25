@@ -73,6 +73,7 @@ $(document).ready( function () {
         paging: false,
         order: [[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
         columnDefs: [
+            { "searchable": false, "targets": [2, 3, 4, 5, 6, 7, 8] },
             { "visible": false, "targets": 8 }
         ],
         aoColumns: [
@@ -90,7 +91,7 @@ $(document).ready( function () {
             {
                 text: 'Show selected entries',
                 action: function ( e, dt, node, config ) {
-                    table.order([[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]]).draw();
+                    table.search('').order([[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]]).draw();
                 }
             }
         ]
