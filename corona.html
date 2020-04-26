@@ -63,65 +63,65 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="btn-toolbar justify-content-md-center" role="toolbar">
-                                <div class="btn-group mr-2 mt-2" role="group">
-                                    <button type="button" class="btn btn-secondary" id="buttonLog"
+                                <div class="btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelLog"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Switch to logarithmic scale">
-                                        Logarithmic scale
-                                    </button>
+                                        <input type="checkbox" id="buttonLog"> Logarithmic scale
+                                    </label>
                                 </div>
-                                <div class="btn-group mr-2 mt-2" role="group">
-                                    <button type="button" class="btn btn-secondary" id="buttonConfirmed"
+                                <div class="btn-group btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelConfirmed"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show confirmed cases">
-                                        Confirmed
-                                    </button>
-                                    <button type="button" class="btn btn-info" id="buttonDeaths"
+                                        <input type="checkbox" id="buttonConfirmed"> Confirmed
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelDeaths"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show death cases">
-                                        Deaths
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" id="buttonRecovered"
+                                        <input type="checkbox" id="buttonDeaths"> Deaths
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelRecovered"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show recovered cases">
-                                        Recovered
-                                    </button>
+                                        <input type="checkbox" id="buttonRecovered"> Recovered
+                                    </label>
                                 </div>
-                                <div class="btn-group mr-2 mt-2" role="group">
-                                    <button type="button" class="btn btn-info" id="radioAbsolute"
+                                <div class="btn-group btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show absolute number of cases">
-                                        Absolute
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" id="radioRelative"
+                                        <input type="radio" name="modes" id="radioAbsolute"> Absolute
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelRelative"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show number of cases per capita in a country">
-                                        Per capita
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" id="radioChangeAbsolute"
+                                        <input type="radio" name="modes" id="radioRelative"> Per capita
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelChangeAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show number of new cases per day">
-                                        New cases
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" id="radioChangeRelative"
+                                        <input type="radio" name="modes" id="radioChangeAbsolute"> New cases
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelChangeRelative"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show increase rate per day compared to the previous one">
-                                        Increase rate
-                                    </button>
+                                        <input type="radio" name="modes" id="radioChangeRelative"> Increase rate
+                                    </label>
                                 </div>
-                                <div class="btn-group mr-2 mt-2" role="group">
-                                    <button type="button" class="btn btn-secondary" id="buttonAligned"
+                                <div class="btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelAligned"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Align curves by the date of the 10th death case">
-                                        Aligned
-                                    </button>
+                                        <input type="checkbox" id="buttonAligned"> Aligned
+                                    </label>
                                 </div>
-                                <div class="btn-group mr-2 mt-2" role="group">
-                                    <button type="button" class="btn btn-secondary" id="buttonSmoothed"
+                                <div class="btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelSmoothed"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                        title="Apply 7-day moving average ">
-                                        Smoothed
-                                    </button>
+                                        title="Apply 7-day moving average">
+                                        <input type="checkbox" id="buttonSmoothed"> Smoothed
+                                    </label>
                                 </div>
                             </div>
                         </div>

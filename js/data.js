@@ -116,165 +116,74 @@ $(document).ready( function () {
 
     // Log-scale button
     $('#buttonLog').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
-        logScale = ($(this).hasClass('btn-info'));
-
+        logScale = ($(this).checked);
+        console.log('Setting logScale', logScale);
         updateSelected();
     } );
 
 
     // Category buttons
     $('#buttonConfirmed').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
-        let selected = ($(this).hasClass('btn-info'));
-        const value = 'confirmed'
-
-        if (selected) {
-            selectedCategories.push(value);
-        } else {
-            selectedCategories = selectedCategories.filter(category => category !== value)
-        }
-
+        updateCategories('confirmed', ($(this).checked));
+        console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
     $('#buttonDeaths').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
-        let selected = ($(this).hasClass('btn-info'));
-        const value = 'deaths'
-
-        if (selected) {
-            selectedCategories.push(value);
-        } else {
-            selectedCategories = selectedCategories.filter(category => category !== value)
-        }
-
+        updateCategories('deaths', ($(this).checked));
+        console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
     $('#buttonRecovered').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
-        let selected = ($(this).hasClass('btn-info'));
-        const value = 'recovered'
-
-        if (selected) {
-            selectedCategories.push(value);
-        } else {
-            selectedCategories = selectedCategories.filter(category => category !== value)
-        }
-
+        updateCategories('recovered', ($(this).checked));
+        console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
 
     // Absolute vs relative vs change radio buttons
     $('#radioAbsolute').click( function () {
-        if (selectedMode !== 'absolute') {
-            $(this).removeClass('btn-secondary');
-            $(this).addClass('btn-info');
-
-            let radioRelative = $('#radioRelative');
-            let radioChangeAbsolute = $('#radioChangeAbsolute');
-            let radioChangeRelative = $('#radioChangeRelative');
-            radioRelative.removeClass('btn-info');
-            radioChangeAbsolute.removeClass('btn-info');
-            radioChangeRelative.removeClass('btn-info');
-            radioRelative.addClass('btn-secondary');
-            radioChangeAbsolute.addClass('btn-secondary');
-            radioChangeRelative.addClass('btn-secondary');
-
-            selectedMode = 'absolute';
-
-            updateSelected();
-        }
+        selectedMode = 'absolute';
+        console.log('Setting mode', selectedMode);
+        updateSelected();
     } );
 
     $('#radioRelative').click( function () {
-        if (selectedMode !== 'relative') {
-            $(this).removeClass('btn-secondary');
-            $(this).addClass('btn-info');
-
-            let radioAbsolute = $('#radioAbsolute');
-            let radioChangeAbsolute = $('#radioChangeAbsolute');
-            let radioChangeRelative = $('#radioChangeRelative');
-            radioAbsolute.removeClass('btn-info');
-            radioChangeAbsolute.removeClass('btn-info');
-            radioChangeRelative.removeClass('btn-info');
-            radioAbsolute.addClass('btn-secondary');
-            radioChangeAbsolute.addClass('btn-secondary');
-            radioChangeRelative.addClass('btn-secondary');
-
-            selectedMode = 'relative';
-
-            updateSelected();
-        }
+        selectedMode = 'relative';
+        console.log('Setting mode', selectedMode);
+        updateSelected();
     } );
 
     $('#radioChangeAbsolute').click( function () {
-        if (selectedMode !== 'change-absolute') {
-            $(this).removeClass('btn-secondary');
-            $(this).addClass('btn-info');
-
-            let radioAbsolute = $('#radioAbsolute');
-            let radioRelative = $('#radioRelative');
-            let radioChangeRelative = $('#radioChangeRelative');
-            radioAbsolute.removeClass('btn-info');
-            radioRelative.removeClass('btn-info');
-            radioChangeRelative.removeClass('btn-info');
-            radioAbsolute.addClass('btn-secondary');
-            radioRelative.addClass('btn-secondary');
-            radioChangeRelative.addClass('btn-secondary');
-
-            selectedMode = 'change-absolute';
-
-            updateSelected();
-        }
+        selectedMode = 'change-absolute';
+        console.log('Setting mode', selectedMode);
+        updateSelected();
     } );
 
     $('#radioChangeRelative').click( function () {
-        if (selectedMode !== 'change-relative') {
-            $(this).removeClass('btn-secondary');
-            $(this).addClass('btn-info');
-
-            let radioAbsolute = $('#radioAbsolute');
-            let radioRelative = $('#radioRelative');
-            let radioChangeAbsolute = $('#radioChangeAbsolute');
-            radioAbsolute.removeClass('btn-info');
-            radioRelative.removeClass('btn-info');
-            radioChangeAbsolute.removeClass('btn-info');
-            radioAbsolute.addClass('btn-secondary');
-            radioRelative.addClass('btn-secondary');
-            radioChangeAbsolute.addClass('btn-secondary');
-
-            selectedMode = 'change-relative';
-
-            updateSelected();
-        }
+        selectedMode = 'change-relative';
+        console.log('Setting mode', selectedMode);
+        updateSelected();
     } );
 
 
     // Aligned button
     $('#buttonAligned').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
-        aligned = ($(this).hasClass('btn-info'));
-
+        aligned = ($(this).checked);
+        console.log('Setting aligned', aligned);
         updateSelected();
     } );
 
 
     // Smoothed button
     $('#buttonSmoothed').click( function () {
-        $(this).toggleClass('btn-info');
-        $(this).toggleClass('btn-secondary');
-        smoothed = ($(this).hasClass('btn-info'));
-
+        smoothed = ($(this).checked);
+        console.log('Setting smoothed', smoothed);
         updateSelected();
     } );
+
+    initializeButtons();
 } );
 
 
@@ -296,6 +205,52 @@ function loadCSV(category, file) {
             updateData();
         }
     } );
+}
+
+
+function setButtonState(name, checked) {
+    $('#button' + name).checked = checked;
+
+    let label = $('#label' + name);
+    if (checked) {
+        label.addClass('active');
+    } else {
+        label.removeClass('active');
+    }
+
+    console.log($('#button' + name), label, checked)
+}
+
+
+function initializeButtons() {
+    // Log-scale button
+    setButtonState('Log', logScale);
+
+    // Category buttons
+    setButtonState('Confirmed', selectedCategories.includes('confirmed'));
+    setButtonState('Deaths', selectedCategories.includes('deaths'));
+    setButtonState('Recovered', selectedCategories.includes('recovered'));
+
+    // Absolute vs relative vs change radio buttons
+    setButtonState('Absolute', selectedMode === 'absolute');
+    setButtonState('Relative', selectedMode === 'relative');
+    setButtonState('ChangeAbsolute', selectedMode === 'change-absolute');
+    setButtonState('ChangeRelative', selectedMode === 'change-relative');
+
+    // Aligned button
+    setButtonState('Aligned', aligned);
+
+    // Smoothed button
+    setButtonState('Smoothed', smoothed);
+}
+
+
+function updateCategories(category, selected) {
+    if (selected) {
+        selectedCategories.push(category);
+    } else {
+        selectedCategories = selectedCategories.filter(cat => cat !== category);
+    }
 }
 
 
@@ -419,7 +374,6 @@ function updateTableData() {
 
 function updateSelected() {
     updateTableHighlights();
-    updateButtons();
     updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned, smoothed);
 }
 
@@ -440,11 +394,6 @@ function updateTableHighlights() {
     })
 
     table.rows().invalidate();
-}
-
-
-function updateButtons() {
-    // TODO
 }
 
 
