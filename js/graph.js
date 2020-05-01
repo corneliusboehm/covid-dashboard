@@ -7,7 +7,8 @@ const lineStyles = {
 };
 
 let graph;
-let datasets = {}
+let datasets = {};
+let currentCategories = [];
 
 
 $(document).ready( function () {
@@ -50,10 +51,11 @@ $(document).ready( function () {
 function generateUniqueLabels(x) {
     let labels = [];
 
+    // Create country labels
     for (const name in datasets) {
         let baseColor = colors[datasets[name].colorIdx];
 
-        labels .push({
+        labels.push({
             text: name,
             fillStyle: hexToRGBA(baseColor, 0.7),
             hidden: false,
@@ -63,6 +65,38 @@ function generateUniqueLabels(x) {
             lineJoin: 'miter',
             lineWidth: 3,
             strokeStyle: hexToRGBA(baseColor, 0.7),
+            pointStyle: null,
+            rotation: null
+        });
+    }
+
+    // Add some space
+    labels.push({
+        text: '',
+        fillStyle: "rgba(0, 0, 0, 0.0)",
+        hidden: false,
+        lineCap: 'butt',
+        lineDash: [],
+        lineDashOffset: 0,
+        lineJoin: 'miter',
+        lineWidth: 3,
+        strokeStyle: "rgba(0, 0, 0, 0)",
+        pointStyle: null,
+        rotation: null
+    });
+
+    // Create category labels
+    for (const category of currentCategories) {
+        labels.push({
+            text: category,
+            fillStyle: "rgba(0, 0, 0, 0)",
+            hidden: false,
+            lineCap: 'butt',
+            lineDash: lineStyles[category],
+            lineDashOffset: 0,
+            lineJoin: 'miter',
+            lineWidth: 3,
+            strokeStyle: "rgba(0.2, 0.2, 0.2, 0.5)",
             pointStyle: null,
             rotation: null
         });
@@ -144,6 +178,7 @@ function updateDataset(country, state, mode, aligned, smoothed) {
 
 function updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned, smoothed) {
     graph.data.datasets = [];
+    currentCategories = selectedCategories;
 
     // Apply scale
     if (logScale) {
