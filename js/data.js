@@ -117,7 +117,6 @@ $(document).ready( function () {
     // Log-scale button
     $('#buttonLog').click( function () {
         logScale = $(this).prop('checked');
-        console.log('Setting logScale', logScale);
         updateSelected();
     } );
 
@@ -125,19 +124,16 @@ $(document).ready( function () {
     // Category buttons
     $('#buttonConfirmed').click( function () {
         updateCategories('confirmed', $(this).prop('checked'));
-        console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
     $('#buttonDeaths').click( function () {
         updateCategories('deaths', $(this).prop('checked'));
-        console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
     $('#buttonRecovered').click( function () {
         updateCategories('recovered', $(this).prop('checked'));
-        console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
@@ -145,25 +141,21 @@ $(document).ready( function () {
     // Absolute vs relative vs change radio buttons
     $('#radioAbsolute').click( function () {
         selectedMode = 'absolute';
-        console.log('Setting mode', selectedMode);
         updateSelected();
     } );
 
     $('#radioRelative').click( function () {
         selectedMode = 'relative';
-        console.log('Setting mode', selectedMode);
         updateSelected();
     } );
 
     $('#radioChangeAbsolute').click( function () {
         selectedMode = 'change-absolute';
-        console.log('Setting mode', selectedMode);
         updateSelected();
     } );
 
     $('#radioChangeRelative').click( function () {
         selectedMode = 'change-relative';
-        console.log('Setting mode', selectedMode);
         updateSelected();
     } );
 
@@ -171,7 +163,6 @@ $(document).ready( function () {
     // Aligned button
     $('#buttonAligned').click( function () {
         aligned = $(this).prop('checked');
-        console.log('Setting aligned', aligned);
         updateSelected();
     } );
 
@@ -179,7 +170,6 @@ $(document).ready( function () {
     // Smoothed button
     $('#buttonSmoothed').click( function () {
         smoothed = $(this).prop('checked');
-        console.log('Setting smoothed', smoothed);
         updateSelected();
     } );
 
@@ -217,8 +207,6 @@ function setButtonState(name, checked) {
     } else {
         label.removeClass('active');
     }
-
-    console.log($('#button' + name), label, checked)
 }
 
 
