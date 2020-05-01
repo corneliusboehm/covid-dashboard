@@ -5,3 +5,29 @@ function hexToRGBA(hex, alpha) {
 
     return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
 }
+
+
+function arrayDiv(a, b) {
+    let out = [];
+    const isNumber = typeof(b) === 'number';
+
+    for (idx = 0; idx < a.length; idx++) {
+        div = isNumber ? b : b[idx];
+        out.push(a[idx] / div);
+    }
+
+    return out;
+}
+
+
+function arraySub(a, b) {
+    let out = [];
+    const isNumber = typeof(b) === 'number';
+
+    for (idx = 0; idx < a.length; idx++) {
+        sub = isNumber ? b : b[idx];
+        out.push(a[idx] - sub);
+    }
+
+    return out;
+}

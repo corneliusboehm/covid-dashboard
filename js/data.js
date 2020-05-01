@@ -421,21 +421,19 @@ function getCountryData(state, country, category, mode, aligned, smoothed) {
             break;
 
         case 'relative':
-            let pop = getPopulation(country)
-            output = tf.div(tf.tensor(dataArray), pop).arraySync();
+            let pop = getPopulation(country);
+            output = arrayDiv(dataArray, pop);
             break;
 
         case 'change-absolute':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
             dataArrayBefore.unshift(0);
-            output = tf.sub(tf.tensor(dataArray), tf.tensor(dataArrayBefore)).arraySync();
+            output = arraySub(dataArray, dataArrayBefore);
             break;
 
         case 'change-relative':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
             dataArrayBefore.unshift(0);
-            let dataTensor = tf.tensor(dataArray);
-            let dataTensorBefore = tf.tensor(dataArrayBefore);
 
             let min = 0;
             for (v of dataArray) {
@@ -446,9 +444,9 @@ function getCountryData(state, country, category, mode, aligned, smoothed) {
             if (min == 0) {
                 min = 1;
             }
-            let dataTensorBeforeFilled = tf.tensor(dataArrayBefore.map(x => x == 0 ? min : x));
+            let dataArrayBeforeFilled = dataArrayBefore.map(x => x == 0 ? min : x);
 
-            output = tf.div(tf.sub(dataTensor, dataTensorBefore), dataTensorBeforeFilled).arraySync();
+            output = arrayDiv(arraySub(dataArray, dataArrayBefore), dataArrayBeforeFilled);
             break;
 
         default:
