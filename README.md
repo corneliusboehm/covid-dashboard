@@ -1,12 +1,12 @@
 # crekowski.github.io
 
+## Interactive COVID-19 Dashboard
+Interactive time-based analysis of COVID-19 case numbers all over the world.
+
 ### Data
-Data is sourced from [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19).
+COVID-19 data from [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE](https://github.com/CSSEGISandData/COVID-19).
 
-
-### Deployment
-No installation necessary, simply open `index.html` in your browser.
-
+Population data from [REST Countries](https://restcountries.eu/).
 
 ### Package references
 - [Chart.js](https://www.chartjs.org/)
