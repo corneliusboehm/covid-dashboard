@@ -116,7 +116,7 @@ $(document).ready( function () {
 
     // Log-scale button
     $('#buttonLog').click( function () {
-        logScale = ($(this).checked);
+        logScale = $(this).prop('checked');
         console.log('Setting logScale', logScale);
         updateSelected();
     } );
@@ -124,19 +124,19 @@ $(document).ready( function () {
 
     // Category buttons
     $('#buttonConfirmed').click( function () {
-        updateCategories('confirmed', ($(this).checked));
+        updateCategories('confirmed', $(this).prop('checked'));
         console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
     $('#buttonDeaths').click( function () {
-        updateCategories('deaths', ($(this).checked));
+        updateCategories('deaths', $(this).prop('checked'));
         console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
 
     $('#buttonRecovered').click( function () {
-        updateCategories('recovered', ($(this).checked));
+        updateCategories('recovered', $(this).prop('checked'));
         console.log('Setting categories', selectedCategories);
         updateSelected();
     } );
@@ -170,7 +170,7 @@ $(document).ready( function () {
 
     // Aligned button
     $('#buttonAligned').click( function () {
-        aligned = ($(this).checked);
+        aligned = $(this).prop('checked');
         console.log('Setting aligned', aligned);
         updateSelected();
     } );
@@ -178,7 +178,7 @@ $(document).ready( function () {
 
     // Smoothed button
     $('#buttonSmoothed').click( function () {
-        smoothed = ($(this).checked);
+        smoothed = $(this).prop('checked');
         console.log('Setting smoothed', smoothed);
         updateSelected();
     } );
@@ -209,7 +209,7 @@ function loadCSV(category, file) {
 
 
 function setButtonState(name, checked) {
-    $('#button' + name).checked = checked;
+    $('#button' + name).prop('checked', checked);
 
     let label = $('#label' + name);
     if (checked) {
