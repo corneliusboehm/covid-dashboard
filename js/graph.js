@@ -2,7 +2,8 @@ const colors = palette('mpn65', 65);
 const lineStyles = {
     deaths: [],
     confirmed: [5, 2],
-    recovered: [1, 1]
+    recovered: [1, 1],
+    active: [10, 2, 2, 2],
 };
 
 let graph;

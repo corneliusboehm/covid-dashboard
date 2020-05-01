@@ -1,6 +1,7 @@
 const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/";
 const firstDate = "1/22/20";
-const categories = ["deaths", "confirmed", "recovered"];
+const inputCategories = ["deaths", "confirmed", "recovered"];
+const categories = ["deaths", "confirmed", "recovered", "active"];
 
 // Table status
 let selectedCountries = {
@@ -55,7 +56,7 @@ let populationNameDict = {
 
 $(document).ready( function () {
     // Load COVID data
-    for (const category of categories) {
+    for (const category of inputCategories) {
         loadCSV(category, "time_series_covid19_" + category + "_global.csv");
     }
 
@@ -137,6 +138,11 @@ $(document).ready( function () {
         updateSelected();
     } );
 
+    $('#buttonActive').click( function () {
+        updateCategories('active', $(this).prop('checked'));
+        updateSelected();
+    } );
+
 
     // Absolute vs relative vs change radio buttons
     $('#radioAbsolute').click( function () {
@@ -185,10 +191,13 @@ function loadCSV(category, file) {
         skipEmptyLines: true,
         complete: function(results) {
             let fields =  results.meta.fields;
-            let dates = fields.slice(fields.indexOf(firstDate), fields.length)
+            const firstDateIdx = fields.indexOf(firstDate);
+            let keys = fields.slice(0, firstDateIdx)
+            let dates = fields.slice(firstDateIdx, fields.length)
 
             data[category] = {
                 data: results.data,
+                keys: keys,
                 dates: dates
             };
 
@@ -218,6 +227,7 @@ function initializeButtons() {
     setButtonState('Confirmed', selectedCategories.includes('confirmed'));
     setButtonState('Deaths', selectedCategories.includes('deaths'));
     setButtonState('Recovered', selectedCategories.includes('recovered'));
+    setButtonState('Active', selectedCategories.includes('active'));
 
     // Absolute vs relative vs change radio buttons
     setButtonState('Absolute', selectedMode === 'absolute');
@@ -243,7 +253,7 @@ function updateCategories(category, selected) {
 
 
 function updateData() {
-    if (categories.every(category => category in data) && population) {
+    if (inputCategories.every(category => category in data) && population) {
         aggregateData();
         updateHeader();
         updateTableData();
@@ -252,6 +262,48 @@ function updateData() {
 
 
 function aggregateData() {
+    // Calculate active cases from other categories
+    data['active'] = {
+        data: [],
+        keys: data.deaths.keys,
+        dates: data.deaths.dates
+    }
+    for (const deathRow of data.deaths.data) {
+        const state = deathRow['Province/State'];
+        const country = deathRow['Country/Region'];
+        let confirmedRow = findCountryData(state, country, 'confirmed');
+        let recoveredRow = findCountryData(state, country, 'recovered');
+
+        if (!confirmedRow || !recoveredRow) {
+            continue;
+        }
+
+        let activeRow = {};
+
+        // Insert fixed keys
+        for (const key of data.deaths.keys) {
+            activeRow[key] = deathRow[key];
+        }
+
+        // Insert active case numbers
+        for (const date of data.deaths.dates) {
+            activeRow[date] = confirmedRow[date] - deathRow[date] - recoveredRow[date];
+        }
+
+        data.active.data.push(activeRow);
+    }
+
+    // Compute global population
+    let globalPopulation = 0;
+    for (const entry of population) {
+        globalPopulation += entry.population
+    }
+    population.push({
+        name: '_World',
+        population: globalPopulation
+    });
+
+    // Aggregate global data
     for (const category of categories) {
         let categoryData = data[category];
         let dates = categoryData.dates;
@@ -267,15 +319,6 @@ function aggregateData() {
         globalData['Province/State'] = null;
         globalData['Country/Region'] = '_World';
         categoryData.data.push(globalData);
-
-        let globalPopulation = 0;
-        for (const entry of population) {
-            globalPopulation += entry.population
-        }
-        population.push({
-            name: '_World',
-            population: globalPopulation
-        });
 
         // Save total
         data.total[category] = globalData[dates[dates.length - 1]];
@@ -401,10 +444,15 @@ function getPopulation(country) {
 }
 
 
-function getCountryData(state, country, category, mode, aligned, smoothed) {
-    let dataCountry = data[category].data.find(function(row) {
+function findCountryData(state, country, category) {
+    return data[category].data.find(function(row) {
         return row['Province/State'] === state && row['Country/Region'] === country;
     } );
+}
+
+
+function getCountryData(state, country, category, mode, aligned, smoothed) {
+    let dataCountry = findCountryData(state, country, category);
 
     if (!dataCountry) {
         console.log('Data not found: ', state, country, category)
