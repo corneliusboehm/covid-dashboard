@@ -84,15 +84,9 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <div class="btn-toolbar justify-content-md-center" role="toolbar">
-                                <div class="btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
-                                    <label class="btn btn-secondary" id="labelLog"
-                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                        title="Switch to logarithmic scale">
-                                        <input type="checkbox" id="buttonLog"> Logarithmic scale
-                                    </label>
-                                </div>
-                                <div class="btn-group btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                            <div class="btn-toolbar" role="toolbar">
+                                <div class="col-sm-1 control-title text-sm-right">Data</div>
+                                <div class="btn-group btn-group-toggle mr-2" role="group" data-toggle="buttons">
                                     <label class="btn btn-secondary" id="labelConfirmed"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show confirmed cases">
@@ -114,7 +108,10 @@
                                         <input type="checkbox" id="buttonActive"> Active
                                     </label>
                                 </div>
-                                <div class="btn-group btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                            </div>
+                            <div class="btn-toolbar mt-2" role="toolbar">
+                                <div class="col-sm-1 control-title text-sm-right">Metric</div>
+                                <div class="btn-group btn-group-toggle mr-2" role="group" data-toggle="buttons">
                                     <label class="btn btn-secondary" id="labelAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show total number of cases">
@@ -136,14 +133,24 @@
                                         <input type="radio" name="modes" id="radioChangeRelative"> Increase rate
                                     </label>
                                 </div>
-                                <div class="btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                            </div>
+                            <div class="btn-toolbar mt-2" role="toolbar">
+                                <div class="col-sm-1 control-title text-sm-right">Layout</div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelLog"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Switch to logarithmic scale">
+                                        <input type="checkbox" id="buttonLog"> Logarithmic scale
+                                    </label>
+                                </div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
                                     <label class="btn btn-secondary" id="labelAligned"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Align curves by the date of the 10th death case">
                                         <input type="checkbox" id="buttonAligned"> Aligned
                                     </label>
                                 </div>
-                                <div class="btn-group-toggle mr-2 mt-2" role="group" data-toggle="buttons">
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
                                     <label class="btn btn-secondary" id="labelSmoothed"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Apply 7-day moving average">
