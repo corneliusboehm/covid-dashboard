@@ -340,7 +340,7 @@ function updateHeader() {
         if (data.trend[category] >= 0) {
             trend = "+" + trend;
         }
-        $('#' + category + 'Header').html(total + " (" + trend + ")");
+        $('#' + category + 'Header').html(total + "<br />(" + trend + ")");
     }
 }
 
