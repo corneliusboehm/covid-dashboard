@@ -55,6 +55,9 @@ let populationNameDict = {
 
 
 $(document).ready( function () {
+    // Get parameters from URL
+    parseURLParams();
+
     // Load COVID data
     for (const category of inputCategories) {
         loadCSV(category, "time_series_covid19_" + category + "_global.csv");
@@ -405,8 +408,84 @@ function updateTableData() {
 
 
 function updateSelected() {
+    updateURL();
     updateTableHighlights();
     updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned, smoothed);
+}
+
+
+function parseURLParams() {
+    let url = new URL(window.location.href);
+    let params = url.searchParams;
+
+    let paramCountries = params.get('countries');
+    if (paramCountries) {
+        paramCountries = decodeURIComponent(paramCountries).split(',');
+
+        selectedCountries = {};
+
+        for (const paramCountry of paramCountries) {
+            countryState = paramCountry.split(':');
+            country = countryState[0];
+            state = countryState.length > 1 ? countryState[1] : null;
+            selectedCountries[country] = state;
+        }
+    }
+
+    let paramCategories = params.get('data');
+    if (paramCategories) {
+        selectedCategories = decodeURIComponent(paramCategories).split(',');
+    }
+
+    let paramMode = params.get('metric');
+    if (paramMode) {
+        selectedMode = paramMode;
+    }
+
+    let paramLogscale = params.get('logscale');
+    logScale = paramLogscale === 'true' ? true : false;
+
+    let paramAligned = params.get('aligned');
+    aligned = paramAligned === 'true' ? true : false;
+
+    let paramSmoothed = params.get('smoothed');
+    smoothed = paramSmoothed === 'true' ? true : false;
+}
+
+
+function updateURL() {
+    let currentURL = new URL(window.location.href);
+    let newURLParams = new URLSearchParams();
+
+    let countries = Array.from(Object.entries(selectedCountries), function (countryState) {
+        country = countryState[0]
+        state = countryState[1]
+        if (state) {
+            return country + ':' + state;
+        } else {
+            return country;
+        }
+    })
+
+    newURLParams.append('countries', countries.join(','));
+    newURLParams.append('data', selectedCategories.join(','));
+    newURLParams.append('metric', selectedMode);
+
+    if (logScale) {
+        newURLParams.append('logscale', true);
+    }
+
+    if (aligned) {
+        newURLParams.append('aligned', true);
+    }
+
+    if (smoothed) {
+        newURLParams.append('smoothed', true);
+    }
+
+    if (newURLParams.toString() !== currentURL.search) {
+        window.history.replaceState(null, '', currentURL.pathname + '?' + newURLParams.toString());
+    }
 }
 
 
