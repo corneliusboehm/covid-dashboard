@@ -351,11 +351,12 @@ function updateTableData() {
         let state = row['Province/State'];
         let country = row['Country/Region'];
         let pop = getPopulation(country);
+        let pop100k = pop != null ? pop / 100000 : null
 
         let deaths = row[lastDate];
         let deathsRelative = '';
-        if (pop != null) {
-            deathsRelative = Math.round((deaths / pop) * 10000) / 100 + '%';
+        if (pop100k != null) {
+            deathsRelative = Math.round(deaths / pop100k);
         }
 
         let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false, false);
@@ -363,8 +364,8 @@ function updateTableData() {
         if (confirmed != null) {
             confirmed = confirmed[confirmed.length - 1];
 
-            if (pop != null) {
-                confirmedRelative = Math.round((confirmed / pop) * 10000) / 100 + '%';
+            if (pop100k != null) {
+                confirmedRelative = Math.round(confirmed / pop100k);
             }
         } else {
             confirmed = 0;
@@ -375,8 +376,8 @@ function updateTableData() {
         if (recovered != null) {
             recovered = recovered[recovered.length - 1];
 
-            if (pop != null) {
-                recoveredRelative = Math.round((recovered / pop) * 10000) / 100 + '%';
+            if (pop100k != null) {
+                recoveredRelative = Math.round(recovered / pop100k);
             }
         } else {
             recovered = 0;
@@ -388,9 +389,9 @@ function updateTableData() {
             confirmed.toLocaleString('en-US'),
             deaths.toLocaleString('en-US'),
             recovered.toLocaleString('en-US'),
-            confirmedRelative,
-            deathsRelative,
-            recoveredRelative,
+            confirmedRelative.toLocaleString('en-US'),
+            deathsRelative.toLocaleString('en-US'),
+            recoveredRelative.toLocaleString('en-US'),
             0
         ]).node();
 
@@ -470,7 +471,12 @@ function getCountryData(state, country, category, mode, aligned, smoothed) {
 
         case 'relative':
             let pop = getPopulation(country);
-            output = arrayDiv(dataArray, pop);
+            if (pop == null) {
+                return null;
+            }
+
+            let pop100k = pop / 100000;
+            output = arrayDiv(dataArray, pop100k);
             break;
 
         case 'change-absolute':
