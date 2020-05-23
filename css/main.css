@@ -20,3 +20,11 @@
   padding-right: 0.75rem;
   min-width: 75px;
 }
+
+.alert-container {
+  top: 20px;
+}
+
+.hidden {
+  display: none;
+}

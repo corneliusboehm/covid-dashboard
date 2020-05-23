@@ -23,6 +23,19 @@
     </head>
 
     <body>
+        <div class="container fixed-top alert-container">
+            <div class="row">
+                <div class="col-sm-6 mx-auto text-center">
+                    <div id="alertURLSuccess" class="alert alert-success hidden" role="alert">
+                        URL copied to clipboard
+                    </div>
+                    <div id="alertURLError" class="alert alert-danger hidden" role="alert">
+                        Copying URL to clipboard failed
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <h1 class="text-center mt-3">Interactive COVID-19 Dashboard</h1>
 
         <div class="container">
@@ -162,6 +175,11 @@
                         <div class="card-body">
                             <canvas id="graph"></canvas>
                         </div>
+                        <div class="card-footer">
+                            <label id="buttonShare" class="btn btn-secondary">
+                                Share URL
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -217,6 +235,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/google-palette@1.1.0/palette.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
         <script src="js/utils.js"></script>
         <script src="js/graph.js"></script>
         <script src="js/data.js"></script>

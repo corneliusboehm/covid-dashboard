@@ -12,6 +12,7 @@ let currentCategories = [];
 
 
 $(document).ready( function () {
+    // Setup graph
     let ctx = document.getElementById('graph').getContext('2d');
     ctx.canvas.height = 400
 
@@ -44,7 +45,27 @@ $(document).ready( function () {
         }
     } );
 
+    // Enable tooltips
     $('[data-toggle="tooltip"]').tooltip()
+
+    // Setup "share URL" button
+    let clipboard = new ClipboardJS('#buttonShare', {
+        text: function(trigger) {
+            return window.location.href;
+        }
+    });
+
+    clipboard.on('success', function(e) {
+        // Show success alert
+        $('#alertURLSuccess').fadeIn('fast');
+        setTimeout("$('#alertURLSuccess').fadeOut('fast')", 2000);
+    });
+
+    clipboard.on('error', function(e) {
+        // Show error alert
+        $('#alertURLError').fadeIn('fast');
+        setTimeout("$('#alertURLError').fadeOut('fast')", 2000);
+    });
 } );
 
 
