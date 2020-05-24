@@ -12,9 +12,18 @@ let currentCategories = [];
 
 
 $(document).ready( function () {
+    // Set explicit background color for chart, important for PNG export
+    Chart.plugins.register({
+        beforeDraw: function(chartInstance) {
+            var ctxInstance = chartInstance.chart.ctx;
+            ctxInstance.fillStyle = 'white';
+            ctxInstance.fillRect(0, 0, chartInstance.chart.width, chartInstance.chart.height);
+        }
+    });
+
     // Setup graph
     let ctx = document.getElementById('graph').getContext('2d');
-    ctx.canvas.height = 400
+    ctx.canvas.height = 400;
 
     graph = new Chart(ctx, {
         type: 'line',
@@ -48,7 +57,7 @@ $(document).ready( function () {
     // Enable tooltips
     $('[data-toggle="tooltip"]').tooltip()
 
-    // Setup "share URL" button
+    // Setup "Share URL" button
     let clipboard = new ClipboardJS('#buttonShare', {
         text: function(trigger) {
             return window.location.href;
@@ -66,6 +75,19 @@ $(document).ready( function () {
         $('#alertURLError').fadeIn('fast');
         setTimeout("$('#alertURLError').fadeOut('fast')", 2000);
     });
+
+    // Setup "Download Image" button
+    $('#buttonDownloadImg').click( function () {
+        let img = graph.toBase64Image();
+        let dlLink = document.createElement('a');
+        dlLink.download = 'COVID-19-graph';
+        dlLink.href = img;
+        dlLink.dataset.downloadurl = ['image/png', dlLink.download, dlLink.href].join(':');
+
+        document.body.appendChild(dlLink);
+        dlLink.click();
+        document.body.removeChild(dlLink);
+    } );
 } );
 
 
