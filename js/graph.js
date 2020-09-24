@@ -50,7 +50,13 @@ $(document).ready( function () {
                     type: 'linear'
                 }]
             },
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {
+                deferred: {
+                    yOffset: '50%', // defer until 50% of the canvas height are inside the viewport
+                    delay: 300      // delay after the canvas is considered inside the viewport
+                }
+            }
         }
     } );
 
