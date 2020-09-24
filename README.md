@@ -1,4 +1,4 @@
-# crekowski.github.io
+# corneliusboehm.github.io
 
 ## Interactive COVID-19 Dashboard
 Interactive time-based analysis of COVID-19 case numbers all over the world.
