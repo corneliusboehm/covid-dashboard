@@ -130,6 +130,11 @@ $(document).ready( function () {
     // Enable tooltips
     $('[data-toggle="tooltip"]').tooltip()
 
+    // Setup "Reset Zoom" button
+    $('#buttonResetZoom').click( function () {
+        graph.resetZoom();
+    });
+
     // Setup "Share URL" button
     let clipboard = new ClipboardJS('#buttonShare', {
         text: function(trigger) {
