@@ -1,5 +1,6 @@
 const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/";
 const firstDate = "1/22/20";
+let latestDate = null;
 const inputCategories = ["deaths", "confirmed", "recovered"];
 const categories = ["deaths", "confirmed", "recovered", "active"];
 
@@ -193,10 +194,10 @@ function loadCSV(category, file) {
         dynamicTyping: true,
         skipEmptyLines: true,
         complete: function(results) {
-            let fields =  results.meta.fields;
+            let fields = results.meta.fields;
             const firstDateIdx = fields.indexOf(firstDate);
-            let keys = fields.slice(0, firstDateIdx)
-            let dates = fields.slice(firstDateIdx, fields.length)
+            let keys = fields.slice(0, firstDateIdx);
+            let dates = fields.slice(firstDateIdx, fields.length);
 
             data[category] = {
                 data: results.data,
@@ -265,11 +266,17 @@ function updateData() {
 
 
 function aggregateData() {
+    let keys = data.deaths.keys;
+    let dates = data.deaths.dates;
+    
+    // Get latest date
+    latestDate = dates[dates.length - 1];
+    
     // Calculate active cases from other categories
     data['active'] = {
         data: [],
-        keys: data.deaths.keys,
-        dates: data.deaths.dates
+        keys: keys,
+        dates: dates
     }
     for (const deathRow of data.deaths.data) {
         const state = deathRow['Province/State'];
@@ -284,12 +291,12 @@ function aggregateData() {
         let activeRow = {};
 
         // Insert fixed keys
-        for (const key of data.deaths.keys) {
+        for (const key of keys) {
             activeRow[key] = deathRow[key];
         }
 
         // Insert active case numbers
-        for (const date of data.deaths.dates) {
+        for (const date of dates) {
             activeRow[date] = confirmedRow[date] - deathRow[date] - recoveredRow[date];
         }
 
@@ -309,7 +316,6 @@ function aggregateData() {
     // Aggregate global data
     for (const category of categories) {
         let categoryData = data[category];
-        let dates = categoryData.dates;
 
         // Sum up global data
         let globalData = Object.fromEntries(dates.map(date => [date, 0]));
@@ -337,13 +343,17 @@ function aggregateData() {
 
 
 function updateHeader() {
+    // Update latest data date
+    $('#latestData').html('Latest data: ' + new Date(latestDate).toDateString());
+    
+    // Update global count boxes
     for (const category of categories) {
         let total = data.total[category].toLocaleString('en-US');
         let trend = data.trend[category].toLocaleString('en-US');
         if (data.trend[category] >= 0) {
             trend = "+" + trend;
         }
-        $('#' + category + 'Header').html(total + "<br />(" + trend + ")");
+        $('#' + category + 'Header').html(total + '<br />(' + trend + ')');
     }
 }
 
