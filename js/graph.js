@@ -83,7 +83,7 @@ $(document).ready( function () {
                         threshold: 10,
 
                         // Function called while the user is panning
-                        onPan: null,
+                        onPan: adjustYScale,
                         // Function called once panning is completed
                         onPanComplete: null
                     },
@@ -114,7 +114,7 @@ $(document).ready( function () {
                         sensitivity: 3,
 
                         // Function called while the user is zooming
-                        onZoom: null,
+                        onZoom: adjustYScale,
                         // Function called once zooming is completed
                         onZoomComplete: null
                     }
@@ -398,6 +398,44 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
         graph.options.plugins.zoom.zoom.speed = 0.1;
     }
 
-    graph.update();
+    // Reset zoom and update graph
     graph.resetZoom();
+}
+
+
+function adjustYScale({chart}) {
+    let xAxis = chart.scales['x-axis-0'];
+    let yAxis = chart.scales['y-axis-0'];
+
+    let labels = chart.data.labels;
+    // TODO: Handle time labels
+    let xMin = Math.floor(xAxis.min);
+    let xMax = Math.ceil(xAxis.max);
+
+    let yMin = Infinity;
+    let yMax = -Infinity;
+
+    // Find minimum and maximum value in visible parts of datasets
+    for (dataset of chart.data.datasets) {
+        let slice = dataset.data.slice(xMin, xMax + 1);
+        // TODO: Handle time data points
+        slice = slice.map(p => p.y);
+
+        let sliceMin = Math.min(...slice);
+        let sliceMax = Math.max(...slice);
+
+        if (sliceMin < yMin) {
+            yMin = sliceMin;
+        }
+        if (sliceMax > yMax) {
+            yMax = sliceMax;
+        }
+    }
+
+    // Find values for min and max so that ticks can be displayed nicely
+    let niceScale = new NiceScale(yMin, yMax, chart.options.scales.yAxes[0].ticks.maxTicksLimit);
+    yAxis.options.ticks.min = niceScale.getNiceLowerBound();
+    yAxis.options.ticks.max = niceScale.getNiceUpperBound();
+
+    chart.update();
 }
