@@ -614,6 +614,14 @@ function getCountryData(state, country, category, mode, aligned, smoothed) {
 
         if (alignmentIndex >= 0) {
             output = output.slice(alignmentIndex);
+
+            // Provide scatter data for linear x-axis
+            for (idx = 0; idx < output.length; idx++) {
+                output[idx] = {
+                    x: idx,
+                    y: output[idx]
+                };
+            }
         } else {
             output = [];
         }

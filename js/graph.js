@@ -44,6 +44,14 @@ $(document).ready( function () {
                     scaleLabel: {
                         display: false,
                         labelString: '# of days after 10th death case'
+                    },
+                    ticks: {
+                        callback: function(value, index, values) {
+                            // Block decimal ticks when panning or zooming
+                            if (typeof value === 'string' || Number.isInteger(value)) {
+                                return value;
+                            }
+                        }
                     }
                 }],
                 yAxes: [{
@@ -52,6 +60,65 @@ $(document).ready( function () {
             },
             maintainAspectRatio: false,
             plugins: {
+                zoom: {
+                    // Container for pan options
+                    pan: {
+                        // Boolean to enable panning
+                        enabled: true,
+
+                        // Panning directions
+                        mode: 'x',
+
+                        rangeMin: {
+                            x: null,
+                        },
+                        rangeMax: {
+                            x: null,
+                        },
+
+                        // On category scale, factor of pan velocity
+                        speed: 20,
+
+                        // Minimal pan distance required before actually applying pan
+                        threshold: 10,
+
+                        // Function called while the user is panning
+                        onPan: null,
+                        // Function called once panning is completed
+                        onPanComplete: null
+                    },
+
+                    // Container for zoom options
+                    zoom: {
+                        // Boolean to enable zooming
+                        enabled: true,
+
+                        // Zooming directions
+                        mode: 'x',
+
+                        rangeMin: {
+                            x: null,
+                        },
+                        rangeMax: {
+                            x: null,
+                        },
+
+                        // Speed of zoom via mouse wheel
+                        // (percentage of zoom on a wheel event)
+                        speed: 0.1,
+
+                        // Minimal zoom distance required before actually applying zoom
+                        threshold: 2,
+
+                        // On category scale, minimal zoom level before actually applying zoom
+                        sensitivity: 3,
+
+                        // Function called while the user is zooming
+                        onZoom: null,
+                        // Function called once zooming is completed
+                        onZoomComplete: null
+                    }
+                },
                 deferred: {
                     yOffset: '50%', // defer until 50% of the canvas height are inside the viewport
                     delay: 300      // delay after the canvas is considered inside the viewport
@@ -289,19 +356,43 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
                 }
             }
         }
-        graph.options.scales.xAxes[0].type = 'category';
+        
+        // Update axes
+        graph.options.scales.xAxes[0].type = 'linear';
         graph.options.scales.xAxes[0].scaleLabel.display = true;
-        graph.data.labels = [...Array(maxLen).keys()];
+        
+        // Update labels
+        graph.data.labels = null;
+        
+        // Update pan/zoom options
+        graph.options.plugins.zoom.pan.rangeMin.x = 0;
+        graph.options.plugins.zoom.pan.rangeMax.x = maxLen - 1;
+        graph.options.plugins.zoom.zoom.rangeMin.x = 0;
+        graph.options.plugins.zoom.zoom.rangeMax.x = maxLen - 1;
+        graph.options.plugins.zoom.zoom.speed = 0.1;
+        graph.options.plugins.zoom.zoom.threshold = 2;
+        graph.options.plugins.zoom.zoom.sensitivity = 3;
     } else {
+        // Update axes
         graph.options.scales.xAxes[0].type = 'time';
         graph.options.scales.xAxes[0].scaleLabel.display = false;
+        
+        // Update labels
         graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
 
         if (smoothed) {
             let labels = graph.data.labels;
             graph.data.labels = graph.data.labels.slice(3, -3);
         }
+        
+        // Update pan/zoom options
+        graph.options.plugins.zoom.pan.rangeMin.x = new Date(firstDate);
+        graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
+        graph.options.plugins.zoom.zoom.rangeMin.x = new Date(firstDate);
+        graph.options.plugins.zoom.zoom.rangeMax.x = new Date(latestDate);
+        graph.options.plugins.zoom.zoom.speed = 0.1;
     }
 
     graph.update();
+    graph.resetZoom();
 }
