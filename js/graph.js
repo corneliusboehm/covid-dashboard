@@ -408,9 +408,26 @@ function adjustYScale({chart}) {
     let yAxis = chart.scales['y-axis-0'];
 
     let labels = chart.data.labels;
-    // TODO: Handle time labels
-    let xMin = Math.floor(xAxis.min);
-    let xMax = Math.ceil(xAxis.max);
+    let xMin, xMax;
+    if (labels == null) {
+        // Numerical scale
+        xMin = Math.floor(xAxis.min);
+        xMax = Math.ceil(xAxis.max);
+    } else {
+        // Time scale
+        let axisMin = new Date(xAxis.min);
+        xMin = labels.findIndex(function(date) {
+            return date > axisMin;
+        } );
+        xMin = xMin > 0 ? xMin - 1 : xMin;
+        xMin = xMin < 0 ? 0 : xMin;
+        
+        let axisMax = new Date(xAxis.max)
+        xMax = labels.findIndex(function(date) {
+            return date >= axisMax;
+        } );
+        xMax = xMax < 0 ? labels.length - 1 : xMax;
+    }
 
     let yMin = Infinity;
     let yMax = -Infinity;
@@ -418,8 +435,11 @@ function adjustYScale({chart}) {
     // Find minimum and maximum value in visible parts of datasets
     for (dataset of chart.data.datasets) {
         let slice = dataset.data.slice(xMin, xMax + 1);
-        // TODO: Handle time data points
-        slice = slice.map(p => p.y);
+        
+        if (slice.length > 0 && typeof slice[0] === 'object') {
+            // Get y-value from scatter points
+            slice = slice.map(p => p.y);
+        }
 
         let sliceMin = Math.min(...slice);
         let sliceMax = Math.max(...slice);
