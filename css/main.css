@@ -6,8 +6,8 @@
   font-size: x-large;
 }
 
-.info {
-  width: 18px;
+.icon {
+  height: 18px;
 }
 
 .btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active,

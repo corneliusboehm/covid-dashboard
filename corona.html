@@ -53,7 +53,7 @@
                     <div class="card text-white bg-danger">
                         <div class="card-header">
                             Total Confirmed
-                            <img class="info" src="img/info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
                                 title="Total number of global confirmed cases and average increase over the last three days">
                             </img>
                         </div>
@@ -66,7 +66,7 @@
                     <div class="card text-white bg-secondary">
                         <div class="card-header">
                             Total Deaths
-                            <img class="info" src="img/info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
                                 title="Total number of global death cases and average increase over the last three days">
                             </img>
                         </div>
@@ -79,7 +79,7 @@
                     <div class="card text-white bg-success">
                         <div class="card-header">
                             Total Recovered
-                            <img class="info" src="img/info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
                                 title="Total number of global recovered cases and average increase over the last three days">
                             </img>
                         </div>
@@ -92,7 +92,7 @@
                     <div class="card text-white bg-info">
                         <div class="card-header">
                             Active
-                            <img class="info" src="img/info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
                                 title="Number of global active cases and average trend over the last three days">
                             </img>
                         </div>
@@ -112,22 +112,30 @@
                                     <label class="btn btn-secondary" id="labelConfirmed"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show confirmed cases">
-                                        <input type="checkbox" id="buttonConfirmed"> Confirmed
+                                        <input type="checkbox" id="buttonConfirmed">
+                                        <img class="icon" src="img/Virus.svg"/>
+                                        Confirmed
                                     </label>
                                     <label class="btn btn-secondary" id="labelDeaths"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show death cases">
-                                        <input type="checkbox" id="buttonDeaths"> Deaths
+                                        <input type="checkbox" id="buttonDeaths">
+                                        <img class="icon" src="img/Death.svg"/>
+                                        Deaths
                                     </label>
                                     <label class="btn btn-secondary" id="labelRecovered"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show recovered cases">
-                                        <input type="checkbox" id="buttonRecovered"> Recovered
+                                        <input type="checkbox" id="buttonRecovered">
+                                        <img class="icon" src="img/Health.svg"/>
+                                        Recovered
                                     </label>
                                     <label class="btn btn-secondary" id="labelActive"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show active cases">
-                                        <input type="checkbox" id="buttonActive"> Active
+                                        <input type="checkbox" id="buttonActive">
+                                        <img class="icon" src="img/Fever.svg"/>
+                                        Active
                                     </label>
                                 </div>
                             </div>
@@ -137,22 +145,30 @@
                                     <label class="btn btn-secondary" id="labelAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show total number of cases">
-                                        <input type="radio" name="modes" id="radioAbsolute"> Total
+                                        <input type="radio" name="modes" id="radioAbsolute">
+                                        <img class="icon" src="img/Sum.svg"/>
+                                        Total
                                     </label>
                                     <label class="btn btn-secondary" id="labelRelative"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show number of cases in a country per 100,000 inhabitants">
-                                        <input type="radio" name="modes" id="radioRelative"> Per 100k
+                                        <input type="radio" name="modes" id="radioRelative">
+                                        <img class="icon" src="img/Average.svg"/>
+                                        Per 100k
                                     </label>
                                     <label class="btn btn-secondary" id="labelChangeAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show number of new cases per day">
-                                        <input type="radio" name="modes" id="radioChangeAbsolute"> New cases
+                                        <input type="radio" name="modes" id="radioChangeAbsolute">
+                                        <img class="icon" src="img/Change.svg"/>
+                                        New cases
                                     </label>
                                     <label class="btn btn-secondary" id="labelChangeRelative"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show increase rate per day compared to the previous one">
-                                        <input type="radio" name="modes" id="radioChangeRelative"> Increase rate
+                                        <input type="radio" name="modes" id="radioChangeRelative">
+                                        <img class="icon" src="img/Change.svg"/>
+                                        Increase rate
                                     </label>
                                 </div>
                             </div>
@@ -162,21 +178,27 @@
                                     <label class="btn btn-secondary" id="labelLog"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Switch to logarithmic scale">
-                                        <input type="checkbox" id="buttonLog"> Logarithmic scale
+                                        <input type="checkbox" id="buttonLog">
+                                        <img class="icon" src="img/Logarithm.svg"/>
+                                        Logarithmic scale
                                     </label>
                                 </div>
                                 <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
                                     <label class="btn btn-secondary" id="labelAligned"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Align curves by the date of the 10th death case">
-                                        <input type="checkbox" id="buttonAligned"> Aligned
+                                        <input type="checkbox" id="buttonAligned">
+                                        <img class="icon" src="img/Align.svg"/>
+                                        Aligned
                                     </label>
                                 </div>
                                 <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
                                     <label class="btn btn-secondary" id="labelSmoothed"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Apply 7-day moving average">
-                                        <input type="checkbox" id="buttonSmoothed"> Smoothed
+                                        <input type="checkbox" id="buttonSmoothed">
+                                        <img class="icon" src="img/Smoothing.svg"/>
+                                        Smoothed
                                     </label>
                                 </div>
                             </div>
@@ -186,12 +208,15 @@
                         </div>
                         <div class="card-footer">
                             <label id="buttonResetZoom" class="btn btn-secondary">
+                                <img class="icon" src="img/Zoom.svg"/>
                                 Reset Zoom
                             </label>
                             <label id="buttonShare" class="btn btn-secondary">
+                                <img class="icon" src="img/Share.svg"/>
                                 Share URL
                             </label>
                             <label id="buttonDownloadImg" class="btn btn-secondary">
+                                <img class="icon" src="img/Download.svg"/>
                                 Download graph
                             </label>
                         </div>

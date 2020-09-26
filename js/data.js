@@ -94,7 +94,7 @@ $(document).ready( function () {
         ],
         buttons: [
             {
-                text: 'Show selected entries',
+                text: '<img class="icon" src="img/Selection.svg"/> Show selected entries',
                 action: function ( e, dt, node, config ) {
                     table.search('').order([[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]]).draw();
                 }
