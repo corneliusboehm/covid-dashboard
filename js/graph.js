@@ -1,10 +1,10 @@
 const colors = palette('mpn65', 65);
-const lineStyles = {
-    deaths: [],
-    confirmed: [5, 2],
-    recovered: [1, 1],
-    active: [10, 2, 2, 2],
-};
+const lineStyles = [
+    [],
+    [5, 2],
+    [1, 1],
+    [10, 2, 2, 2],
+];
 
 let graph;
 let datasets = {};
@@ -207,13 +207,13 @@ function generateUniqueLabels(x) {
     });
 
     // Create category labels
-    for (const category of currentCategories) {
+    for (idx = 0; idx < currentCategories.length; idx++) {
         labels.push({
-            text: category,
+            text: currentCategories[idx],
             fillStyle: "rgba(0, 0, 0, 0)",
             hidden: false,
             lineCap: 'butt',
-            lineDash: lineStyles[category],
+            lineDash: lineStyles[idx],
             lineDashOffset: 0,
             lineJoin: 'miter',
             lineWidth: 3,
@@ -275,7 +275,7 @@ function createDataset(country, state, category, metric, relative, aligned, smoo
         pointBorderColor: hexToRGBA(baseColor, 1),
         pointRadius: 0,
         pointHoverRadius: 0,
-        borderDash: lineStyles[category]
+        borderDash: function() {return lineStyles[currentCategories.findIndex(c => c === category)];}
     };
 
     datasets[displayName].categories[category] = dataset;
