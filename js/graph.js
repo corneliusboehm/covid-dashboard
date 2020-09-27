@@ -236,7 +236,7 @@ function getDisplayName(country, state) {
 }
 
 
-function createDataset(country, state, category, mode, relative, aligned, smoothed) {
+function createDataset(country, state, category, metric, relative, aligned, smoothed) {
     let displayName = getDisplayName(country, state);
     let colorIdx = 0;
 
@@ -253,7 +253,7 @@ function createDataset(country, state, category, mode, relative, aligned, smooth
         datasets[displayName] = {
             categories: {},
             colorIdx: colorIdx,
-            mode: mode,
+            metric: metric,
             relative: relative,
             aligned: aligned,
             smoothed: smoothed
@@ -264,7 +264,7 @@ function createDataset(country, state, category, mode, relative, aligned, smooth
 
     // Create dataset
     let baseColor = colors[colorIdx];
-    let countryData = getCountryData(state, country, category, mode, relative, aligned, smoothed);
+    let countryData = getCountryData(state, country, category, metric, relative, aligned, smoothed);
 
     let dataset = {
         label: displayName,
@@ -284,22 +284,22 @@ function createDataset(country, state, category, mode, relative, aligned, smooth
 }
 
 
-function updateDataset(country, state, mode, relative, aligned, smoothed) {
+function updateDataset(country, state, metric, relative, aligned, smoothed) {
     let displayName = getDisplayName(country, state);
     let dataset = datasets[displayName];
 
     for (const category in dataset.categories) {
-        dataset.categories[category].data = getCountryData(state, country, category, mode, relative, aligned, smoothed);
+        dataset.categories[category].data = getCountryData(state, country, category, metric, relative, aligned, smoothed);
     }
 
     dataset.relative = relative;
-    dataset.mode = mode;
+    dataset.metric = metric;
     dataset.aligned = aligned;
     dataset.smoothed = smoothed;
 }
 
 
-function updateGraph(data, selectedCountries, selectedCategories, selectedMode, relative, logScale, aligned, smoothed) {
+function updateGraph(data, selectedCountries, selectedCategories, selectedMetric, relative, logScale, aligned, smoothed) {
     graph.data.datasets = [];
     currentCategories = selectedCategories;
 
@@ -334,14 +334,14 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
         let state = selectedCountries[country];
         let displayName = getDisplayName(country, state);
 
-        // Check for correct mode
+        // Check for correct options
         if (displayName in datasets
-            && (datasets[displayName].mode !== selectedMode
+            && (datasets[displayName].metric !== selectedMetric
                 || datasets[displayName].relative !== relative
                 || datasets[displayName].aligned !== aligned
                 || datasets[displayName].smoothed !== smoothed))
         {
-            updateDataset(country, state, selectedMode, relative, aligned, smoothed);
+            updateDataset(country, state, selectedMetric, relative, aligned, smoothed);
         }
 
         // Check for categories
@@ -349,7 +349,7 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
             if (displayName in datasets && category in datasets[displayName].categories) {
                 graph.data.datasets.push(datasets[displayName].categories[category]);
             } else {
-                graph.data.datasets.push(createDataset(country, state, category, selectedMode, relative, aligned, smoothed));
+                graph.data.datasets.push(createDataset(country, state, category, selectedMetric, relative, aligned, smoothed));
             }
         }
     }

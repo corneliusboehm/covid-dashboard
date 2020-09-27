@@ -15,7 +15,7 @@ let selectedCountries = {
 
 // Button group status
 let selectedCategories = ["active"];
-let selectedMode = 'absolute';
+let selectedMetric = 'total';
 let relative = false;
 let logScale = false;
 let aligned = false;
@@ -142,14 +142,14 @@ $(document).ready( function () {
     } );
 
 
-    // Absolute vs change radio buttons
-    $('#buttonAbsolute').click( function () {
-        selectedMode = 'absolute';
+    // Total vs change radio buttons
+    $('#buttonTotal').click( function () {
+        selectedMetric = 'total';
         updateSelected();
     } );
 
-    $('#buttonChangeAbsolute').click( function () {
-        selectedMode = 'change-absolute';
+    $('#buttonChange').click( function () {
+        selectedMetric = 'change';
         updateSelected();
     } );
 
@@ -228,9 +228,9 @@ function initializeButtons() {
     setButtonState('Recovered', selectedCategories.includes('recovered'));
     setButtonState('Active', selectedCategories.includes('active'));
 
-    // Absolute vs relative vs change radio buttons
-    setButtonState('Absolute', selectedMode === 'absolute');
-    setButtonState('ChangeAbsolute', selectedMode === 'change-absolute');
+    // Total vs change radio buttons
+    setButtonState('Total', selectedMetric === 'total');
+    setButtonState('Change', selectedMetric === 'change');
 
     // Relative button
     setButtonState('Relative', relative);
@@ -371,7 +371,7 @@ function updateTableData() {
             deathsRelative = Math.round(deaths / pop100k);
         }
 
-        let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false, false, false);
+        let confirmed = getCountryData(state, country, 'confirmed', 'total', false, false, false);
         let confirmedRelative = '';
         if (confirmed != null) {
             confirmed = confirmed[confirmed.length - 1];
@@ -383,7 +383,7 @@ function updateTableData() {
             confirmed = 0;
         }
 
-        let recovered = getCountryData(state, country, 'recovered', 'absolute', false, false, false);
+        let recovered = getCountryData(state, country, 'recovered', 'total', false, false, false);
         let recoveredRelative = ''
         if (recovered != null) {
             recovered = recovered[recovered.length - 1];
@@ -419,7 +419,7 @@ function updateTableData() {
 function updateSelected() {
     updateURL();
     updateTableHighlights();
-    updateGraph(data, selectedCountries, selectedCategories, selectedMode, relative, logScale, aligned, smoothed);
+    updateGraph(data, selectedCountries, selectedCategories, selectedMetric, relative, logScale, aligned, smoothed);
 }
 
 
@@ -446,9 +446,9 @@ function parseURLParams() {
         selectedCategories = decodeURIComponent(paramCategories).split(',');
     }
 
-    let paramMode = params.get('metric');
-    if (paramMode) {
-        selectedMode = paramMode;
+    let paramMetric = params.get('metric');
+    if (paramMetric) {
+        selectedMetric = paramMetric;
     }
     
     let paramRelative = params.get('relative');
@@ -481,7 +481,7 @@ function updateURL() {
 
     newURLParams.append('countries', countries.join(','));
     newURLParams.append('data', selectedCategories.join(','));
-    newURLParams.append('metric', selectedMode);
+    newURLParams.append('metric', selectedMetric);
     
     if (relative) {
         newURLParams.append('relative', true);
@@ -547,7 +547,7 @@ function findCountryData(state, country, category) {
 }
 
 
-function getCountryData(state, country, category, mode, relative, aligned, smoothed) {
+function getCountryData(state, country, category, metric, relative, aligned, smoothed) {
     let dataCountry = findCountryData(state, country, category);
 
     if (!dataCountry) {
@@ -559,12 +559,12 @@ function getCountryData(state, country, category, mode, relative, aligned, smoot
     let dataArrayBefore;
     let output;
 
-    switch (mode) {
-        case 'absolute':
+    switch (metric) {
+        case 'total':
             output = dataArray;
             break;
 
-        case 'change-absolute':
+        case 'change':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
             dataArrayBefore.unshift(0);
             output = arraySub(dataArray, dataArrayBefore);
@@ -595,7 +595,7 @@ function getCountryData(state, country, category, mode, relative, aligned, smoot
     }
 
     if (aligned) {
-        let deathData = getCountryData(state, country, 'deaths', 'absolute', false, false, smoothed);
+        let deathData = getCountryData(state, country, 'deaths', 'total', false, false, smoothed);
         let alignmentIndex = deathData.findIndex(function(value) {
             return value >= 10;
         } );
