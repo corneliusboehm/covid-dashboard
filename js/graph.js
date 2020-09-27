@@ -236,7 +236,7 @@ function getDisplayName(country, state) {
 }
 
 
-function createDataset(country, state, category, mode, aligned, smoothed) {
+function createDataset(country, state, category, mode, relative, aligned, smoothed) {
     let displayName = getDisplayName(country, state);
     let colorIdx = 0;
 
@@ -254,6 +254,7 @@ function createDataset(country, state, category, mode, aligned, smoothed) {
             categories: {},
             colorIdx: colorIdx,
             mode: mode,
+            relative: relative,
             aligned: aligned,
             smoothed: smoothed
         };
@@ -263,7 +264,7 @@ function createDataset(country, state, category, mode, aligned, smoothed) {
 
     // Create dataset
     let baseColor = colors[colorIdx];
-    let countryData = getCountryData(state, country, category, mode, aligned, smoothed);
+    let countryData = getCountryData(state, country, category, mode, relative, aligned, smoothed);
 
     let dataset = {
         label: displayName,
@@ -283,21 +284,22 @@ function createDataset(country, state, category, mode, aligned, smoothed) {
 }
 
 
-function updateDataset(country, state, mode, aligned, smoothed) {
+function updateDataset(country, state, mode, relative, aligned, smoothed) {
     let displayName = getDisplayName(country, state);
     let dataset = datasets[displayName];
 
     for (const category in dataset.categories) {
-        dataset.categories[category].data = getCountryData(state, country, category, mode, aligned, smoothed);
+        dataset.categories[category].data = getCountryData(state, country, category, mode, relative, aligned, smoothed);
     }
 
+    dataset.relative = relative;
     dataset.mode = mode;
     dataset.aligned = aligned;
     dataset.smoothed = smoothed;
 }
 
 
-function updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned, smoothed) {
+function updateGraph(data, selectedCountries, selectedCategories, selectedMode, relative, logScale, aligned, smoothed) {
     graph.data.datasets = [];
     currentCategories = selectedCategories;
 
@@ -335,10 +337,11 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
         // Check for correct mode
         if (displayName in datasets
             && (datasets[displayName].mode !== selectedMode
+                || datasets[displayName].relative !== relative
                 || datasets[displayName].aligned !== aligned
                 || datasets[displayName].smoothed !== smoothed))
         {
-            updateDataset(country, state, selectedMode, aligned, smoothed);
+            updateDataset(country, state, selectedMode, relative, aligned, smoothed);
         }
 
         // Check for categories
@@ -346,7 +349,7 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
             if (displayName in datasets && category in datasets[displayName].categories) {
                 graph.data.datasets.push(datasets[displayName].categories[category]);
             } else {
-                graph.data.datasets.push(createDataset(country, state, category, selectedMode, aligned, smoothed));
+                graph.data.datasets.push(createDataset(country, state, category, selectedMode, relative, aligned, smoothed));
             }
         }
     }
@@ -369,14 +372,11 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
         // Update labels
         graph.data.labels = null;
         
-        // Update pan/zoom options
+        // Update pan/zoom ranges
         graph.options.plugins.zoom.pan.rangeMin.x = 0;
         graph.options.plugins.zoom.pan.rangeMax.x = maxLen - 1;
         graph.options.plugins.zoom.zoom.rangeMin.x = 0;
         graph.options.plugins.zoom.zoom.rangeMax.x = maxLen - 1;
-        graph.options.plugins.zoom.zoom.speed = 0.1;
-        graph.options.plugins.zoom.zoom.threshold = 2;
-        graph.options.plugins.zoom.zoom.sensitivity = 3;
     } else {
         // Update axes
         graph.options.scales.xAxes[0].type = 'time';
@@ -390,12 +390,11 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMode, 
             graph.data.labels = graph.data.labels.slice(3, -3);
         }
         
-        // Update pan/zoom options
+        // Update pan/zoom ranges
         graph.options.plugins.zoom.pan.rangeMin.x = new Date(firstDate);
         graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
         graph.options.plugins.zoom.zoom.rangeMin.x = new Date(firstDate);
         graph.options.plugins.zoom.zoom.rangeMax.x = new Date(latestDate);
-        graph.options.plugins.zoom.zoom.speed = 0.1;
     }
 
     // Reset zoom and update graph

@@ -14,9 +14,10 @@ let selectedCountries = {
 };
 
 // Button group status
-let logScale = false;
-let selectedCategories = ["deaths"];
+let selectedCategories = ["active"];
 let selectedMode = 'absolute';
+let relative = false;
+let logScale = false;
 let aligned = false;
 let smoothed = false;
 
@@ -119,13 +120,6 @@ $(document).ready( function () {
     } );
 
 
-    // Log-scale button
-    $('#buttonLog').click( function () {
-        logScale = $(this).prop('checked');
-        updateSelected();
-    } );
-
-
     // Category buttons
     $('#buttonConfirmed').click( function () {
         updateCategories('confirmed', $(this).prop('checked'));
@@ -148,24 +142,28 @@ $(document).ready( function () {
     } );
 
 
-    // Absolute vs relative vs change radio buttons
-    $('#radioAbsolute').click( function () {
+    // Absolute vs change radio buttons
+    $('#buttonAbsolute').click( function () {
         selectedMode = 'absolute';
         updateSelected();
     } );
 
-    $('#radioRelative').click( function () {
-        selectedMode = 'relative';
-        updateSelected();
-    } );
-
-    $('#radioChangeAbsolute').click( function () {
+    $('#buttonChangeAbsolute').click( function () {
         selectedMode = 'change-absolute';
         updateSelected();
     } );
 
-    $('#radioChangeRelative').click( function () {
-        selectedMode = 'change-relative';
+
+    // Relative button
+    $('#buttonRelative').click( function () {
+        relative = $(this).prop('checked');
+        updateSelected();
+    } );
+
+
+    // Log-scale button
+    $('#buttonLog').click( function () {
+        logScale = $(this).prop('checked');
         updateSelected();
     } );
 
@@ -224,9 +222,6 @@ function setButtonState(name, checked) {
 
 
 function initializeButtons() {
-    // Log-scale button
-    setButtonState('Log', logScale);
-
     // Category buttons
     setButtonState('Confirmed', selectedCategories.includes('confirmed'));
     setButtonState('Deaths', selectedCategories.includes('deaths'));
@@ -235,9 +230,13 @@ function initializeButtons() {
 
     // Absolute vs relative vs change radio buttons
     setButtonState('Absolute', selectedMode === 'absolute');
-    setButtonState('Relative', selectedMode === 'relative');
     setButtonState('ChangeAbsolute', selectedMode === 'change-absolute');
-    setButtonState('ChangeRelative', selectedMode === 'change-relative');
+
+    // Relative button
+    setButtonState('Relative', relative);
+
+    // Log-scale button
+    setButtonState('Log', logScale);
 
     // Aligned button
     setButtonState('Aligned', aligned);
@@ -372,7 +371,7 @@ function updateTableData() {
             deathsRelative = Math.round(deaths / pop100k);
         }
 
-        let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false, false);
+        let confirmed = getCountryData(state, country, 'confirmed', 'absolute', false, false, false);
         let confirmedRelative = '';
         if (confirmed != null) {
             confirmed = confirmed[confirmed.length - 1];
@@ -384,7 +383,7 @@ function updateTableData() {
             confirmed = 0;
         }
 
-        let recovered = getCountryData(state, country, 'recovered', 'absolute', false, false);
+        let recovered = getCountryData(state, country, 'recovered', 'absolute', false, false, false);
         let recoveredRelative = ''
         if (recovered != null) {
             recovered = recovered[recovered.length - 1];
@@ -420,7 +419,7 @@ function updateTableData() {
 function updateSelected() {
     updateURL();
     updateTableHighlights();
-    updateGraph(data, selectedCountries, selectedCategories, selectedMode, logScale, aligned, smoothed);
+    updateGraph(data, selectedCountries, selectedCategories, selectedMode, relative, logScale, aligned, smoothed);
 }
 
 
@@ -451,6 +450,9 @@ function parseURLParams() {
     if (paramMode) {
         selectedMode = paramMode;
     }
+    
+    let paramRelative = params.get('relative');
+    relative = paramRelative === 'true' ? true : false;
 
     let paramLogscale = params.get('logscale');
     logScale = paramLogscale === 'true' ? true : false;
@@ -480,6 +482,10 @@ function updateURL() {
     newURLParams.append('countries', countries.join(','));
     newURLParams.append('data', selectedCategories.join(','));
     newURLParams.append('metric', selectedMode);
+    
+    if (relative) {
+        newURLParams.append('relative', true);
+    }
 
     if (logScale) {
         newURLParams.append('logscale', true);
@@ -541,7 +547,7 @@ function findCountryData(state, country, category) {
 }
 
 
-function getCountryData(state, country, category, mode, aligned, smoothed) {
+function getCountryData(state, country, category, mode, relative, aligned, smoothed) {
     let dataCountry = findCountryData(state, country, category);
 
     if (!dataCountry) {
@@ -558,42 +564,24 @@ function getCountryData(state, country, category, mode, aligned, smoothed) {
             output = dataArray;
             break;
 
-        case 'relative':
-            let pop = getPopulation(country);
-            if (pop == null) {
-                return null;
-            }
-
-            let pop100k = pop / 100000;
-            output = arrayDiv(dataArray, pop100k);
-            break;
-
         case 'change-absolute':
             dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
             dataArrayBefore.unshift(0);
             output = arraySub(dataArray, dataArrayBefore);
             break;
 
-        case 'change-relative':
-            dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
-            dataArrayBefore.unshift(0);
-
-            let min = 0;
-            for (v of dataArray) {
-                if (min == 0 || (v > 0 && v < min)) {
-                    min = v;
-                }
-            }
-            if (min == 0) {
-                min = 1;
-            }
-            let dataArrayBeforeFilled = dataArrayBefore.map(x => x == 0 ? min : x);
-
-            output = arrayDiv(arraySub(dataArray, dataArrayBefore), dataArrayBeforeFilled);
-            break;
-
         default:
             return null;
+    }
+    
+    if (relative) {
+        let pop = getPopulation(country);
+        if (pop == null) {
+            return null;
+        }
+
+        let pop100k = pop / 100000;
+        output = arrayDiv(output, pop100k);
     }
 
     if (smoothed) {
@@ -607,7 +595,7 @@ function getCountryData(state, country, category, mode, aligned, smoothed) {
     }
 
     if (aligned) {
-        let deathData = getCountryData(state, country, 'deaths', 'absolute', false, smoothed);
+        let deathData = getCountryData(state, country, 'deaths', 'absolute', false, false, smoothed);
         let alignmentIndex = deathData.findIndex(function(value) {
             return value >= 10;
         } );

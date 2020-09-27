@@ -146,30 +146,25 @@
                                     <label class="btn btn-secondary" id="labelAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show total number of cases">
-                                        <input type="radio" name="modes" id="radioAbsolute">
+                                        <input type="radio" name="modes" id="buttonAbsolute">
                                         <img class="icon" src="img/Sum.svg"/>
                                         Total
-                                    </label>
-                                    <label class="btn btn-secondary" id="labelRelative"
-                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                        title="Show number of cases in a country per 100,000 inhabitants">
-                                        <input type="radio" name="modes" id="radioRelative">
-                                        <img class="icon" src="img/Average.svg"/>
-                                        Per 100k
                                     </label>
                                     <label class="btn btn-secondary" id="labelChangeAbsolute"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                         title="Show number of new cases per day">
-                                        <input type="radio" name="modes" id="radioChangeAbsolute">
+                                        <input type="radio" name="modes" id="buttonChangeAbsolute">
                                         <img class="icon" src="img/Change.svg"/>
                                         New cases
                                     </label>
-                                    <label class="btn btn-secondary" id="labelChangeRelative"
+                                </div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelRelative"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                        title="Show increase rate per day compared to the previous one">
-                                        <input type="radio" name="modes" id="radioChangeRelative">
-                                        <img class="icon" src="img/Change.svg"/>
-                                        Increase rate
+                                        title="Show number of cases in a country per 100,000 inhabitants">
+                                        <input type="checkbox" id="buttonRelative">
+                                        <img class="icon" src="img/Average.svg"/>
+                                        Per 100k
                                     </label>
                                 </div>
                             </div>
@@ -210,7 +205,7 @@
                         <div class="card-footer">
                             <label id="buttonResetZoom" class="btn btn-secondary">
                                 <img class="icon" src="img/Zoom.svg"/>
-                                Reset Zoom
+                                Reset zoom
                             </label>
                             <label id="buttonShare" class="btn btn-secondary">
                                 <img class="icon" src="img/Share.svg"/>
