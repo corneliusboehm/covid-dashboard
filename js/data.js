@@ -5,13 +5,11 @@ const inputCategories = ["deaths", "confirmed", "recovered"];
 const categories = ["deaths", "confirmed", "recovered", "active"];
 
 // Table status
-let selectedCountries = {
-    _World: null,
-    Germany: null,
-    China: 'Hubei',
-    Italy: null,
-    US: null
-};
+let selectedCountries = [
+    '_World',
+    'Germany',
+    'US'
+];
 
 // Button group status
 let selectedCategories = ["active"];
@@ -77,13 +75,12 @@ $(document).ready( function () {
         scrollY: "300px",
         scrollCollapse: true,
         paging: false,
-        order: [[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]],
+        order: [[7, 'desc'], [ 0, 'asc' ]],
         columnDefs: [
-            { "searchable": false, "targets": [2, 3, 4, 5, 6, 7, 8] },
-            { "visible": false, "targets": 8 }
+            { "searchable": false, "targets": [1, 2, 3, 4, 5, 6, 7] },
+            { "visible": false, "targets": 7 }
         ],
         aoColumns: [
-            null,
             null,
             {orderSequence: ['desc', 'asc']},
             {orderSequence: ['desc', 'asc']},
@@ -97,7 +94,7 @@ $(document).ready( function () {
             {
                 text: '<img class="icon" src="img/Selection.svg"/> Show selected entries',
                 action: function ( e, dt, node, config ) {
-                    table.search('').order([[8, 'desc'], [ 0, 'asc' ], [ 1, 'asc' ]]).draw();
+                    table.search('').order([[7, 'desc'], [ 0, 'asc' ]]).draw();
                 }
             }
         ]
@@ -108,12 +105,12 @@ $(document).ready( function () {
         let selected = !($(this).hasClass('table-primary'));
         let rowData = table.row(this).data();
         let country = rowData[0];
-        let state = rowData[1];
 
         if (selected) {
-            selectedCountries[country] = state;
+            selectedCountries.push(country);
         } else {
-            delete selectedCountries[country];
+            const idx = selectedCountries.indexOf(country);
+            selectedCountries.splice(idx, 1);
         }
 
         updateSelected();
@@ -257,6 +254,7 @@ function updateCategories(category, selected) {
 
 function updateData() {
     if (inputCategories.every(category => category in data) && population) {
+        cleanData();
         aggregateData();
         updateHeader();
         updateTableData();
@@ -264,24 +262,82 @@ function updateData() {
 }
 
 
+function cleanData() {
+    for (const category of inputCategories) {
+        provinces = [];
+        countries = {};
+        categoryData = data[category].data;
+        dates = data[category].dates;
+
+        // Sort data into countries and provinces
+        for (row of categoryData) {
+            if (row['Province/State'] === null) {
+                country = row['Country/Region'];
+                row['Country'] = country;
+                delete row['Country/Region'];
+                delete row['Province/State'];
+                countries[country] = row;
+            } else {
+                provinces.push(row);
+            }
+        }
+
+        // Sum up provinces or make them their own countries
+        summedCountries = {};
+        for (province of provinces) {
+            country = province['Country/Region'];
+            provinceName = province['Province/State'];
+
+            delete row['Country/Region'];
+            delete row['Province/State'];
+
+            if (country in countries) {
+                // The mainland of this country already has an entry,
+                // make this one it's own entry
+                combinedName = provinceName + ' (' + country + ')';
+                province['Country'] = combinedName;
+                countries[combinedName] = province;
+            } else if (country in summedCountries) {
+                summedRow = summedCountries[country];
+                for (const date of dates) {
+                    summedRow[date] += province[date];
+                }
+            } else {
+                // TODO: Better create a deep copy
+                province['Country'] = country;
+                summedCountries[country] = province;
+            }
+        }
+
+        data[category].data = Object.values(countries).concat(Object.values(summedCountries));
+
+        // Update keys
+        countryIdx = data[category].keys.indexOf('Country/Region');
+        data[category].keys[countryIdx] = 'Country';
+        provinceIdx = data[category].keys.indexOf('Province/State');
+        data[category].keys.splice(provinceIdx, 1);
+    }
+}
+
+
 function aggregateData() {
     let keys = data.deaths.keys;
     let dates = data.deaths.dates;
-    
+
     // Get latest date
     latestDate = dates[dates.length - 1];
-    
+
     // Calculate active cases from other categories
     data['active'] = {
         data: [],
         keys: keys,
         dates: dates
     }
+
     for (const deathRow of data.deaths.data) {
-        const state = deathRow['Province/State'];
-        const country = deathRow['Country/Region'];
-        let confirmedRow = findCountryData(state, country, 'confirmed');
-        let recoveredRow = findCountryData(state, country, 'recovered');
+        const country = deathRow['Country'];
+        let confirmedRow = findCountryData(country, 'confirmed');
+        let recoveredRow = findCountryData(country, 'recovered');
 
         if (!confirmedRow || !recoveredRow) {
             continue;
@@ -324,8 +380,7 @@ function aggregateData() {
             }
         }
 
-        globalData['Province/State'] = null;
-        globalData['Country/Region'] = '_World';
+        globalData['Country'] = '_World';
         categoryData.data.push(globalData);
 
         // Save total
@@ -344,7 +399,7 @@ function aggregateData() {
 function updateHeader() {
     // Update latest data date
     $('#latestData').html('Latest data: ' + new Date(latestDate).toDateString());
-    
+
     // Update global count boxes
     for (const category of categories) {
         let total = data.total[category].toLocaleString('en-US');
@@ -360,8 +415,7 @@ function updateHeader() {
 function updateTableData() {
     let lastDate = data.deaths.dates[data.deaths.dates.length - 1];
     for (const row of data.deaths.data) {
-        let state = row['Province/State'];
-        let country = row['Country/Region'];
+        let country = row['Country'];
         let pop = getPopulation(country);
         let pop100k = pop != null ? pop / 100000 : null
 
@@ -371,7 +425,7 @@ function updateTableData() {
             deathsRelative = Math.round(deaths / pop100k);
         }
 
-        let confirmed = getCountryData(state, country, 'confirmed', 'total', false, false, false);
+        let confirmed = getCountryData(country, 'confirmed', 'total', false, false, false);
         let confirmedRelative = '';
         if (confirmed != null) {
             confirmed = confirmed[confirmed.length - 1];
@@ -383,7 +437,7 @@ function updateTableData() {
             confirmed = 0;
         }
 
-        let recovered = getCountryData(state, country, 'recovered', 'total', false, false, false);
+        let recovered = getCountryData(country, 'recovered', 'total', false, false, false);
         let recoveredRelative = ''
         if (recovered != null) {
             recovered = recovered[recovered.length - 1];
@@ -397,7 +451,6 @@ function updateTableData() {
 
         rowNode = table.row.add([
             country,
-            state,
             confirmed.toLocaleString('en-US'),
             deaths.toLocaleString('en-US'),
             recovered.toLocaleString('en-US'),
@@ -406,8 +459,6 @@ function updateTableData() {
             recoveredRelative.toLocaleString('en-US'),
             0
         ]).node();
-
-        // TODO: Use row().child() for adding children to a row
     }
 
     // Show default selected countries
@@ -429,16 +480,7 @@ function parseURLParams() {
 
     let paramCountries = params.get('countries');
     if (paramCountries) {
-        paramCountries = decodeURIComponent(paramCountries).split(',');
-
-        selectedCountries = {};
-
-        for (const paramCountry of paramCountries) {
-            countryState = paramCountry.split(':');
-            country = countryState[0];
-            state = countryState.length > 1 ? countryState[1] : null;
-            selectedCountries[country] = state;
-        }
+        selectedCountries = decodeURIComponent(paramCountries).split(',');
     }
 
     let paramCategories = params.get('data');
@@ -450,7 +492,7 @@ function parseURLParams() {
     if (paramMetric) {
         selectedMetric = paramMetric;
     }
-    
+
     let paramRelative = params.get('relative');
     relative = paramRelative === 'true' ? true : false;
 
@@ -469,20 +511,10 @@ function updateURL() {
     let currentURL = new URL(window.location.href);
     let newURLParams = new URLSearchParams();
 
-    let countries = Array.from(Object.entries(selectedCountries), function (countryState) {
-        country = countryState[0]
-        state = countryState[1]
-        if (state) {
-            return country + ':' + state;
-        } else {
-            return country;
-        }
-    })
-
-    newURLParams.append('countries', countries.join(','));
+    newURLParams.append('countries', selectedCountries.join(','));
     newURLParams.append('data', selectedCategories.join(','));
     newURLParams.append('metric', selectedMetric);
-    
+
     if (relative) {
         newURLParams.append('relative', true);
     }
@@ -509,14 +541,13 @@ function updateTableHighlights() {
     table.rows().every(function() {
         let rowData = this.data();
         let country = rowData[0];
-        let state = rowData[1];
 
-        if (country in selectedCountries && selectedCountries[country] === state) {
+        if (selectedCountries.includes(country)) {
             $(this.node()).addClass('table-primary');
-            rowData[8] = 1;
+            rowData[7] = 1;
         } else {
             $(this.node()).removeClass('table-primary');
-            rowData[8] = 0;
+            rowData[7] = 0;
         }
     })
 
@@ -527,7 +558,6 @@ function updateTableHighlights() {
 function getPopulation(country) {
     let popName = populationNameDict.hasOwnProperty(country) ? populationNameDict[country] : country;
     let pop = population.find(function(entry) {
-        // TODO: How to handle states?
         return entry.name === popName;
     } );
 
@@ -540,18 +570,19 @@ function getPopulation(country) {
 }
 
 
-function findCountryData(state, country, category) {
+function findCountryData(country, category) {
+    // TODO: This can probably be improved now
     return data[category].data.find(function(row) {
-        return row['Province/State'] === state && row['Country/Region'] === country;
+        return row['Country'] === country;
     } );
 }
 
 
-function getCountryData(state, country, category, metric, relative, aligned, smoothed) {
-    let dataCountry = findCountryData(state, country, category);
+function getCountryData(country, category, metric, relative, aligned, smoothed) {
+    let dataCountry = findCountryData(country, category);
 
     if (!dataCountry) {
-        console.log('Data not found: ', state, country, category)
+        console.log('Data not found: ', country, category)
         return null;
     }
 
@@ -573,7 +604,7 @@ function getCountryData(state, country, category, metric, relative, aligned, smo
         default:
             return null;
     }
-    
+
     if (relative) {
         let pop = getPopulation(country);
         if (pop == null) {
@@ -595,7 +626,7 @@ function getCountryData(state, country, category, metric, relative, aligned, smo
     }
 
     if (aligned) {
-        let deathData = getCountryData(state, country, 'deaths', 'total', false, false, smoothed);
+        let deathData = getCountryData(country, 'deaths', 'total', false, false, smoothed);
         let alignmentIndex = deathData.findIndex(function(value) {
             return value >= 10;
         } );

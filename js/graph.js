@@ -227,20 +227,10 @@ function generateUniqueLabels(x) {
 }
 
 
-function getDisplayName(country, state) {
-    if (state) {
-        return country + ", " + state;
-    } else {
-        return country;
-    }
-}
-
-
-function createDataset(country, state, category, metric, relative, aligned, smoothed) {
-    let displayName = getDisplayName(country, state);
+function createDataset(country, category, metric, relative, aligned, smoothed) {
     let colorIdx = 0;
 
-    if (!(displayName in datasets)) {
+    if (!(country in datasets)) {
         // Find next free color index
         let colorIndices = Array.from(Object.values(datasets), function(dataset) {return dataset.colorIdx});
         let numDatasets = Object.keys(datasets).length;
@@ -250,7 +240,7 @@ function createDataset(country, state, category, metric, relative, aligned, smoo
             }) % colors.length;
         }
 
-        datasets[displayName] = {
+        datasets[country] = {
             categories: {},
             colorIdx: colorIdx,
             metric: metric,
@@ -259,15 +249,15 @@ function createDataset(country, state, category, metric, relative, aligned, smoo
             smoothed: smoothed
         };
     } else {
-        colorIdx = datasets[displayName].colorIdx;
+        colorIdx = datasets[country].colorIdx;
     }
 
     // Create dataset
     let baseColor = colors[colorIdx];
-    let countryData = getCountryData(state, country, category, metric, relative, aligned, smoothed);
+    let countryData = getCountryData(country, category, metric, relative, aligned, smoothed);
 
     let dataset = {
-        label: displayName,
+        label: country,
         data: countryData,
         fill: false,
         borderColor: hexToRGBA(baseColor, 0.7),
@@ -278,18 +268,17 @@ function createDataset(country, state, category, metric, relative, aligned, smoo
         borderDash: function() {return lineStyles[currentCategories.findIndex(c => c === category)];}
     };
 
-    datasets[displayName].categories[category] = dataset;
+    datasets[country].categories[category] = dataset;
 
     return dataset;
 }
 
 
-function updateDataset(country, state, metric, relative, aligned, smoothed) {
-    let displayName = getDisplayName(country, state);
-    let dataset = datasets[displayName];
+function updateDataset(country, metric, relative, aligned, smoothed) {
+    let dataset = datasets[country];
 
     for (const category in dataset.categories) {
-        dataset.categories[category].data = getCountryData(state, country, category, metric, relative, aligned, smoothed);
+        dataset.categories[category].data = getCountryData(country, category, metric, relative, aligned, smoothed);
     }
 
     dataset.relative = relative;
@@ -311,45 +300,41 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMetric
     }
 
     // Remove old datasets
-    let displayNames = Array.from(Object.keys(selectedCountries),
-                                  country => getDisplayName(country, selectedCountries[country]));
-    for (const name in datasets) {
-        if (!displayNames.includes(name)) {
-            delete datasets[name];
+    for (const country in datasets) {
+        if (!selectedCountries.includes(country)) {
+            delete datasets[country];
         } else {
-            for (const category in datasets[name].categories) {
+            for (const category in datasets[country].categories) {
                 if (!selectedCategories.includes(category)) {
-                    delete datasets[name].categories[category];
+                    delete datasets[country].categories[category];
                 }
             }
 
-            if (jQuery.isEmptyObject(datasets[name].categories)) {
-                delete datasets[name];
+            if (jQuery.isEmptyObject(datasets[country].categories)) {
+                delete datasets[country];
             }
         }
     }
 
     // Add new datasets
-    for (const country in selectedCountries) {
-        let state = selectedCountries[country];
-        let displayName = getDisplayName(country, state);
+    for (const country of selectedCountries) {
 
         // Check for correct options
-        if (displayName in datasets
-            && (datasets[displayName].metric !== selectedMetric
-                || datasets[displayName].relative !== relative
-                || datasets[displayName].aligned !== aligned
-                || datasets[displayName].smoothed !== smoothed))
+        if (country in datasets
+            && (datasets[country].metric !== selectedMetric
+                || datasets[country].relative !== relative
+                || datasets[country].aligned !== aligned
+                || datasets[country].smoothed !== smoothed))
         {
-            updateDataset(country, state, selectedMetric, relative, aligned, smoothed);
+            updateDataset(country, selectedMetric, relative, aligned, smoothed);
         }
 
         // Check for categories
         for (const category of selectedCategories) {
-            if (displayName in datasets && category in datasets[displayName].categories) {
-                graph.data.datasets.push(datasets[displayName].categories[category]);
+            if (country in datasets && category in datasets[country].categories) {
+                graph.data.datasets.push(datasets[country].categories[category]);
             } else {
-                graph.data.datasets.push(createDataset(country, state, category, selectedMetric, relative, aligned, smoothed));
+                graph.data.datasets.push(createDataset(country, category, selectedMetric, relative, aligned, smoothed));
             }
         }
     }
@@ -364,14 +349,14 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMetric
                 }
             }
         }
-        
+
         // Update axes
         graph.options.scales.xAxes[0].type = 'linear';
         graph.options.scales.xAxes[0].scaleLabel.display = true;
-        
+
         // Update labels
         graph.data.labels = null;
-        
+
         // Update pan/zoom ranges
         graph.options.plugins.zoom.pan.rangeMin.x = 0;
         graph.options.plugins.zoom.pan.rangeMax.x = maxLen - 1;
@@ -381,7 +366,7 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMetric
         // Update axes
         graph.options.scales.xAxes[0].type = 'time';
         graph.options.scales.xAxes[0].scaleLabel.display = false;
-        
+
         // Update labels
         graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
 
@@ -389,7 +374,7 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMetric
             let labels = graph.data.labels;
             graph.data.labels = graph.data.labels.slice(3, -3);
         }
-        
+
         // Update pan/zoom ranges
         graph.options.plugins.zoom.pan.rangeMin.x = new Date(firstDate);
         graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
@@ -420,7 +405,7 @@ function adjustYScale({chart}) {
         } );
         xMin = xMin > 0 ? xMin - 1 : xMin;
         xMin = xMin < 0 ? 0 : xMin;
-        
+
         let axisMax = new Date(xAxis.max)
         xMax = labels.findIndex(function(date) {
             return date >= axisMax;
@@ -434,7 +419,7 @@ function adjustYScale({chart}) {
     // Find minimum and maximum value in visible parts of datasets
     for (dataset of chart.data.datasets) {
         let slice = dataset.data.slice(xMin, xMax + 1);
-        
+
         if (slice.length > 0 && typeof slice[0] === 'object') {
             // Get y-value from scatter points
             slice = slice.map(p => p.y);
