@@ -306,9 +306,8 @@ function cleanData() {
             if (country in countries) {
                 // The mainland of this country already has an entry,
                 // make this one it's own entry
-                combinedName = provinceName + ' (' + country + ')';
-                province['Country'] = combinedName;
-                countries[combinedName] = province;
+                province['Country'] = provinceName;
+                countries[provinceName] = province;
             } else if (country in summedCountries) {
                 summedRow = summedCountries[country];
                 for (const date of dates) {
@@ -568,9 +567,6 @@ function updateTableHighlights() {
 
 
 function getPopulation(country) {
-    // Remove country suffix from earlier provinces
-    country = country.replace(/(.*) \(.*\)/, '$1');
-
     // Map names to population data naming
     let popName = country in populationNameDict ? populationNameDict[country] : country;
 
