@@ -29,11 +29,13 @@ let population;
 
 let populationNameDict = {
     'Bolivia': 'Bolivia (Plurinational State of)',
+    'British Virgin Islands': 'Virgin Islands (British)',
     'Brunei': 'Brunei Darussalam',
     'Burma': 'Myanmar',
     'Congo (Brazzaville)': 'Congo',
     'Congo (Kinshasa)': 'Congo (Democratic Republic of the)',
     'Cote d\'Ivoire': 'Côte d\'Ivoire',
+    'Curacao': 'Curaçao',
     'Czechia': 'Czech Republic',
     'Eswatini': 'Swaziland',
     'Iran': 'Iran (Islamic Republic of)',
@@ -42,7 +44,11 @@ let populationNameDict = {
     'Laos': 'Lao People\'s Democratic Republic',
     'Moldova': 'Moldova (Republic of)',
     'North Macedonia': 'Macedonia (the former Yugoslav Republic of)',
+    'Reunion': 'Réunion',
     'Russia': 'Russian Federation',
+    'Saint Barthelemy': 'Saint Barthélemy',
+    'Sint Maarten': 'Sint Maarten (Dutch part)',
+    'St Martin': 'Saint Martin (French part)',
     'Syria': 'Syrian Arab Republic',
     'Taiwan*': 'Taiwan',
     'Tanzania': 'Tanzania, United Republic of',
@@ -51,6 +57,12 @@ let populationNameDict = {
     'Venezuela': 'Venezuela (Bolivarian Republic of)',
     'Vietnam': 'Viet Nam',
     'West Bank and Gaza': 'Palestine, State of'
+}
+
+let missingPopulations = {
+    'Channel Islands': 170499,  // source: https://en.wikipedia.org/wiki/Channel_Islands
+    'Diamond Princess': 3711,  // source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+    'MS Zaandam': 1829,  // source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
 }
 
 
@@ -556,13 +568,20 @@ function updateTableHighlights() {
 
 
 function getPopulation(country) {
-    let popName = populationNameDict.hasOwnProperty(country) ? populationNameDict[country] : country;
+    // Remove country suffix from earlier provinces
+    country = country.replace(/(.*) \(.*\)/, '$1');
+
+    // Map names to population data naming
+    let popName = country in populationNameDict ? populationNameDict[country] : country;
+
     let pop = population.find(function(entry) {
         return entry.name === popName;
     } );
 
     if (pop != null) {
         return pop.population;
+    } else if (country in missingPopulations) {
+        return missingPopulations[country]
     } else {
         console.log('Population data not found: ', country);
         return null;
