@@ -3,6 +3,8 @@ const firstDate = "1/22/20";
 let latestDate = null;
 const inputCategories = ["deaths", "confirmed", "recovered"];
 const categories = ["deaths", "confirmed", "recovered", "active"];
+const countryKey = 'Country/Region';
+const provinceKey = 'Province/State';
 
 // Table status
 let selectedCountries = [
@@ -283,12 +285,8 @@ function cleanData() {
 
         // Sort data into countries and provinces
         for (row of categoryData) {
-            if (row['Province/State'] === null) {
-                country = row['Country/Region'];
-                row['Country'] = country;
-                delete row['Country/Region'];
-                delete row['Province/State'];
-                countries[country] = row;
+            if (row[provinceKey] === null) {
+                countries[row[countryKey]] = row;
             } else {
                 provinces.push(row);
             }
@@ -297,16 +295,13 @@ function cleanData() {
         // Sum up provinces or make them their own countries
         summedCountries = {};
         for (province of provinces) {
-            country = province['Country/Region'];
-            provinceName = province['Province/State'];
-
-            delete row['Country/Region'];
-            delete row['Province/State'];
+            country = province[countryKey];
+            provinceName = province[provinceKey];
 
             if (country in countries) {
                 // The mainland of this country already has an entry,
                 // make this one it's own entry
-                province['Country'] = provinceName;
+                province[countryKey] = provinceName;
                 countries[provinceName] = province;
             } else if (country in summedCountries) {
                 summedRow = summedCountries[country];
@@ -314,19 +309,11 @@ function cleanData() {
                     summedRow[date] += province[date];
                 }
             } else {
-                // TODO: Better create a deep copy
-                province['Country'] = country;
                 summedCountries[country] = province;
             }
         }
 
         data[category].data = Object.values(countries).concat(Object.values(summedCountries));
-
-        // Update keys
-        countryIdx = data[category].keys.indexOf('Country/Region');
-        data[category].keys[countryIdx] = 'Country';
-        provinceIdx = data[category].keys.indexOf('Province/State');
-        data[category].keys.splice(provinceIdx, 1);
     }
 }
 
@@ -346,7 +333,7 @@ function aggregateData() {
     }
 
     for (const deathRow of data.deaths.data) {
-        const country = deathRow['Country'];
+        const country = deathRow[countryKey];
         let confirmedRow = findCountryData(country, 'confirmed');
         let recoveredRow = findCountryData(country, 'recovered');
 
@@ -391,7 +378,7 @@ function aggregateData() {
             }
         }
 
-        globalData['Country'] = '_World';
+        globalData[countryKey] = '_World';
         categoryData.data.push(globalData);
 
         // Save total
@@ -426,7 +413,7 @@ function updateHeader() {
 function updateTableData() {
     let lastDate = data.deaths.dates[data.deaths.dates.length - 1];
     for (const row of data.deaths.data) {
-        let country = row['Country'];
+        let country = row[countryKey];
         let pop = getPopulation(country);
         let pop100k = pop != null ? pop / 100000 : null
 
@@ -586,10 +573,7 @@ function getPopulation(country) {
 
 
 function findCountryData(country, category) {
-    // TODO: This can probably be improved now
-    return data[category].data.find(function(row) {
-        return row['Country'] === country;
-    } );
+    return data[category].data.find(row => row[countryKey] === country);
 }
 
 
