@@ -62,9 +62,18 @@ let populationNameDict = {
 }
 
 let missingPopulations = {
-    'Channel Islands': 170499,  // source: https://en.wikipedia.org/wiki/Channel_Islands
-    'Diamond Princess': 3711,  // source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
-    'MS Zaandam': 1829,  // source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+    'Channel Islands': {
+        population: 170499,  // Source: https://en.wikipedia.org/wiki/Channel_Islands
+        flag: null,
+    },
+    'Diamond Princess': {
+        population: 3711,  // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+        flag: null,
+    },
+    'MS Zaandam': {
+        population: 1829,  // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+        flag: null,
+    }
 }
 
 
@@ -78,7 +87,7 @@ $(document).ready( function () {
     }
 
     // Load population data
-    $.getJSON('https://restcountries.eu/rest/v2/all?fields=name;population', function(populationData) {
+    $.getJSON('https://restcountries.eu/rest/v2/all?fields=name;population;flag', function(populationData) {
         population = populationData;
         updateData();
     } );
@@ -89,12 +98,15 @@ $(document).ready( function () {
         scrollY: "300px",
         scrollCollapse: true,
         paging: false,
-        order: [[7, 'desc'], [ 0, 'asc' ]],
+        order: [[8, 'desc'], [ 1, 'asc' ]],
         columnDefs: [
-            { "searchable": false, "targets": [1, 2, 3, 4, 5, 6, 7] },
-            { "visible": false, "targets": 7 }
+            { "orderable": false, "targets": [0] },
+            { "className": "dt-body-center", "targets": [0] },
+            { "searchable": false, "targets": [0, 2, 3, 4, 5, 6, 7, 8] },
+            { "visible": false, "targets": 8 }
         ],
         aoColumns: [
+            null,
             null,
             {orderSequence: ['desc', 'asc']},
             {orderSequence: ['desc', 'asc']},
@@ -107,8 +119,8 @@ $(document).ready( function () {
         buttons: [
             {
                 text: '<img class="icon" src="img/Selection.svg"/> Show selected entries',
-                action: function ( e, dt, node, config ) {
-                    table.search('').order([[7, 'desc'], [ 0, 'asc' ]]).draw();
+                action: function (e, dt, node, config) {
+                    table.search('').order([[8, 'desc'], [1, 'asc']]).draw();
                 }
             }
         ]
@@ -118,7 +130,7 @@ $(document).ready( function () {
     $('#countryTable tbody').on( 'click', 'tr', function () {
         let selected = !($(this).hasClass('table-primary'));
         let rowData = table.row(this).data();
-        let country = rowData[0];
+        let country = rowData[1];
 
         if (selected) {
             selectedCountries.push(country);
@@ -363,7 +375,8 @@ function aggregateData() {
     }
     population.push({
         name: '_World',
-        population: globalPopulation
+        population: globalPopulation,
+        flag: 'img/Globe.png',  // Source: http://www.pngplay.com/image/11497
     });
 
     // Aggregate global data
@@ -417,6 +430,9 @@ function updateTableData() {
         let pop = getPopulation(country);
         let pop100k = pop != null ? pop / 100000 : null
 
+        let flagURL = getFlag(country);
+        let flag = flagURL != null ? "<img src='" + flagURL + "' class='flag'>" : null;
+
         let deaths = row[lastDate];
         let deathsRelative = '';
         if (pop100k != null) {
@@ -448,6 +464,7 @@ function updateTableData() {
         }
 
         rowNode = table.row.add([
+            flag,
             country,
             confirmed.toLocaleString('en-US'),
             deaths.toLocaleString('en-US'),
@@ -538,14 +555,14 @@ function updateURL() {
 function updateTableHighlights() {
     table.rows().every(function() {
         let rowData = this.data();
-        let country = rowData[0];
+        let country = rowData[1];
 
         if (selectedCountries.includes(country)) {
             $(this.node()).addClass('table-primary');
-            rowData[7] = 1;
+            rowData[8] = 1;
         } else {
             $(this.node()).removeClass('table-primary');
-            rowData[7] = 0;
+            rowData[8] = 0;
         }
     })
 
@@ -553,22 +570,32 @@ function updateTableHighlights() {
 }
 
 
-function getPopulation(country) {
+function getRestCountriesEntry(country) {
     // Map names to population data naming
     let popName = country in populationNameDict ? populationNameDict[country] : country;
 
-    let pop = population.find(function(entry) {
-        return entry.name === popName;
-    } );
+    let pop = population.find(entry => entry.name === popName);
 
     if (pop != null) {
-        return pop.population;
+        return pop;
     } else if (country in missingPopulations) {
         return missingPopulations[country]
     } else {
-        console.log('Population data not found: ', country);
+        console.log('No REST Countries entry: ', country);
         return null;
     }
+}
+
+
+function getPopulation(country) {
+    pop = getRestCountriesEntry(country);
+    return pop != null ? pop.population : null;
+}
+
+
+function getFlag(country) {
+    pop = getRestCountriesEntry(country);
+    return pop != null ? pop.flag : null;
 }
 
 

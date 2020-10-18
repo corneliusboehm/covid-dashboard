@@ -10,6 +10,13 @@
   height: 18px;
 }
 
+.flag {
+  height: auto;
+  width: auto;
+  max-width: 30px;
+  max-height: 20px;
+}
+
 .btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active,
 .show > .btn-secondary.dropdown-toggle {
   color: #fff;
