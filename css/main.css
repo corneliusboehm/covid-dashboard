@@ -39,3 +39,7 @@
 .hidden {
   display: none;
 }
+
+.dt-body-center{
+  text-align: center;
+}
