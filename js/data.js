@@ -1,4 +1,5 @@
 const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/";
+const restCountriesURL = 'https://restcountries.eu/rest/v2/all?fields=name;population;flag'
 const firstDate = "1/22/20";
 let latestDate = null;
 const inputCategories = ["deaths", "confirmed", "recovered"];
@@ -12,6 +13,18 @@ let selectedCountries = [
     'Germany',
     'US'
 ];
+
+const columns = {
+    FLAG: 0,
+    COUNTRY: 1,
+    CONFIRMED_TOTAL: 2,
+    DEATHS_TOTAL: 3,
+    RECOVERED_TOTAL: 4,
+    CONFIRMED_RELATIVE: 5,
+    DEATHS_RELATIVE: 6,
+    RECOVERED_RELATIVE: 7,
+    SELECTED: 8,
+}
 
 // Button group status
 let selectedCategories = ["active"];
@@ -63,15 +76,18 @@ let populationNameDict = {
 
 let missingPopulations = {
     'Channel Islands': {
-        population: 170499,  // Source: https://en.wikipedia.org/wiki/Channel_Islands
+        // Source: https://en.wikipedia.org/wiki/Channel_Islands
+        population: 170499,
         flag: null,
     },
     'Diamond Princess': {
-        population: 3711,  // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+        // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+        population: 3711,
         flag: null,
     },
     'MS Zaandam': {
-        population: 1829,  // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+        // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
+        population: 1829,
         flag: null,
     }
 }
@@ -87,7 +103,7 @@ $(document).ready( function () {
     }
 
     // Load population data
-    $.getJSON('https://restcountries.eu/rest/v2/all?fields=name;population;flag', function(populationData) {
+    $.getJSON(restCountriesURL, function(populationData) {
         population = populationData;
         updateData();
     } );
@@ -98,30 +114,47 @@ $(document).ready( function () {
         scrollY: "300px",
         scrollCollapse: true,
         paging: false,
-        order: [[8, 'desc'], [ 1, 'asc' ]],
+        order: [[columns.SELECTED, 'desc'], [ columns.COUNTRY, 'asc' ]],
         columnDefs: [
-            { "orderable": false, "targets": [0] },
-            { "className": "dt-body-center", "targets": [0] },
-            { "className": "noVis", "targets": [0, 1, 8] },   // Prevent visibility toggling
-            { "searchable": false, "targets": [0, 2, 3, 4, 5, 6, 7, 8] },
-            { "visible": false, "targets": [4, 7, 8] }
+            {"orderable": false, "targets": [columns.FLAG]},
+            {"className": "dt-body-center", "targets": [columns.FLAG]},
+            // Prevent visibility toggling
+            {"className": "noVis", "targets": [columns.FLAG, columns.COUNTRY, columns.SELECTED]},
+            {"searchable": false, "targets": [
+                columns.FLAG,
+                columns.CONFIRMED_TOTAL,
+                columns.DEATHS_TOTAL,
+                columns.RECOVERED_TOTAL,
+                columns.CONFIRMED_RELATIVE,
+                columns.DEATHS_RELATIVE,
+                columns.RECOVERED_RELATIVE,
+                columns.SELECTED,
+            ]},
+            {"visible": false, "targets": [
+                columns.RECOVERED_TOTAL,
+                columns.RECOVERED_RELATIVE,
+                columns.SELECTED,
+            ]}
         ],
         aoColumns: [
-            null,
-            null,
-            {orderSequence: ['desc', 'asc']},
-            {orderSequence: ['desc', 'asc']},
-            {orderSequence: ['desc', 'asc']},
-            {orderSequence: ['desc', 'asc']},
-            {orderSequence: ['desc', 'asc']},
-            {orderSequence: ['desc', 'asc']},
-            null
+            null,  // FLAG
+            null,  // COUNTRY
+            {orderSequence: ['desc', 'asc']},  // CONFIRMED_TOTAL
+            {orderSequence: ['desc', 'asc']},  // DEATHS_TOTAL
+            {orderSequence: ['desc', 'asc']},  // RECOVERED_TOTAL
+            {orderSequence: ['desc', 'asc']},  // CONFIRMED_RELATIVE
+            {orderSequence: ['desc', 'asc']},  // DEATHS_RELATIVE
+            {orderSequence: ['desc', 'asc']},  // RECOVERED_RELATIVE
+            null,  // SELECTED
         ],
         buttons: [
             {
                 text: '<img class="icon" src="img/Selection.svg"/> Show selected entries',
                 action: function (e, dt, node, config) {
-                    table.search('').order([[8, 'desc'], [1, 'asc']]).draw();
+                    table.search('').order([
+                        [columns.SELECTED, 'desc'], 
+                        [columns.COUNTRY, 'asc']
+                    ]).draw();
                 }
             },
             {
@@ -136,7 +169,7 @@ $(document).ready( function () {
     $('#countryTable tbody').on( 'click', 'tr', function () {
         let selected = !($(this).hasClass('table-primary'));
         let rowData = table.row(this).data();
-        let country = rowData[1];
+        let country = rowData[columns.COUNTRY];
 
         if (selected) {
             selectedCountries.push(country);
@@ -561,14 +594,14 @@ function updateURL() {
 function updateTableHighlights() {
     table.rows().every(function() {
         let rowData = this.data();
-        let country = rowData[1];
+        let country = rowData[columns.COUNTRY];
 
         if (selectedCountries.includes(country)) {
             $(this.node()).addClass('table-primary');
-            rowData[8] = 1;
+            rowData[columns.SELECTED] = 1;
         } else {
             $(this.node()).removeClass('table-primary');
-            rowData[8] = 0;
+            rowData[columns.SELECTED] = 0;
         }
     })
 
