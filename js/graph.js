@@ -232,7 +232,8 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
 
     if (!(country in datasets)) {
         // Find next free color index
-        let colorIndices = Array.from(Object.values(datasets), function(dataset) {return dataset.colorIdx});
+        let colorIndices = Array.from(Object.values(datasets), 
+                                      function(dataset) {return dataset.colorIdx});
         let numDatasets = Object.keys(datasets).length;
         if (numDatasets > 0) {
             colorIdx = [...Array(numDatasets + 1).keys()].find(function(idx) {
@@ -265,7 +266,9 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
         pointBorderColor: hexToRGBA(baseColor, 1),
         pointRadius: 0,
         pointHoverRadius: 0,
-        borderDash: function() {return lineStyles[currentCategories.findIndex(c => c === category)];}
+        borderDash: function() {
+            return lineStyles[currentCategories.findIndex(c => c === category)];
+        }
     };
 
     datasets[country].categories[category] = dataset;
@@ -278,7 +281,14 @@ function updateDataset(country, metric, relative, aligned, smoothed) {
     let dataset = datasets[country];
 
     for (const category in dataset.categories) {
-        dataset.categories[category].data = getCountryData(country, category, metric, relative, aligned, smoothed);
+        dataset.categories[category].data = getCountryData(
+            country,
+            category,
+            metric,
+            relative,
+            aligned,
+            smoothed,
+        );
     }
 
     dataset.relative = relative;
@@ -288,7 +298,15 @@ function updateDataset(country, metric, relative, aligned, smoothed) {
 }
 
 
-function updateGraph(data, selectedCountries, selectedCategories, selectedMetric, relative, logScale, aligned, smoothed) {
+function updateGraph(data,
+                     selectedCountries,
+                     selectedCategories,
+                     selectedMetric,
+                     relative,
+                     logScale,
+                     aligned,
+                     smoothed)
+{
     graph.data.datasets = [];
     currentCategories = selectedCategories;
 
@@ -334,7 +352,14 @@ function updateGraph(data, selectedCountries, selectedCategories, selectedMetric
             if (country in datasets && category in datasets[country].categories) {
                 graph.data.datasets.push(datasets[country].categories[category]);
             } else {
-                graph.data.datasets.push(createDataset(country, category, selectedMetric, relative, aligned, smoothed));
+                graph.data.datasets.push(createDataset(
+                    country,
+                    category,
+                    selectedMetric,
+                    relative,
+                    aligned,
+                    smoothed,
+                ));
             }
         }
     }

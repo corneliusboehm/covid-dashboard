@@ -1,4 +1,5 @@
-const baseDataURL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/';
+const baseDataURL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/' + 
+                    'csse_covid_19_data/csse_covid_19_time_series/';
 const restCountriesURL = 'https://restcountries.eu/rest/v2/all?fields=name;population;flag'
 const firstDate = '1/22/20';
 let latestDate = null;
@@ -524,7 +525,16 @@ function updateTableData() {
 function updateSelected() {
     updateURL();
     updateTableHighlights();
-    updateGraph(data, selectedCountries, selectedCategories, selectedMetric, relative, logScale, aligned, smoothed);
+    updateGraph(
+        data,
+        selectedCountries,
+        selectedCategories,
+        selectedMetric,
+        relative,
+        logScale,
+        aligned,
+        smoothed,
+    );
 }
 
 
