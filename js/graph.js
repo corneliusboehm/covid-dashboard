@@ -401,9 +401,9 @@ function updateGraph(data,
         }
 
         // Update pan/zoom ranges
-        graph.options.plugins.zoom.pan.rangeMin.x = new Date(firstDate);
+        graph.options.plugins.zoom.pan.rangeMin.x = new Date(FIRST_DATE);
         graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
-        graph.options.plugins.zoom.zoom.rangeMin.x = new Date(firstDate);
+        graph.options.plugins.zoom.zoom.rangeMin.x = new Date(FIRST_DATE);
         graph.options.plugins.zoom.zoom.rangeMax.x = new Date(latestDate);
     }
 
