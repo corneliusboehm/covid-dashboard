@@ -7,10 +7,11 @@ const inputCategories = ['deaths', 'confirmed', 'recovered'];
 const categories = ['deaths', 'confirmed', 'recovered', 'active'];
 const countryKey = 'Country/Region';
 const provinceKey = 'Province/State';
+const worldName = 'World';
 
 // Table status
 let selectedCountries = [
-    '_World',
+    worldName,
     'Germany',
     'US'
 ];
@@ -414,7 +415,7 @@ function aggregateData() {
         globalPopulation += entry.population
     }
     population.push({
-        name: '_World',
+        name: worldName,
         population: globalPopulation,
         flag: 'img/Globe.png',  // Source: http://www.pngplay.com/image/11497
     });
@@ -431,7 +432,7 @@ function aggregateData() {
             }
         }
 
-        globalData[countryKey] = '_World';
+        globalData[countryKey] = worldName;
         categoryData.data.push(globalData);
 
         // Save total
@@ -608,10 +609,18 @@ function updateTableHighlights() {
 
         if (selectedCountries.includes(country)) {
             $(this.node()).addClass('table-primary');
-            rowData[columns.SELECTED] = 1;
+            if (country === worldName) {
+                rowData[columns.SELECTED] = 3;
+            } else {
+                rowData[columns.SELECTED] = 2;
+            }
         } else {
             $(this.node()).removeClass('table-primary');
-            rowData[columns.SELECTED] = 0;
+            if (country === worldName) {
+                rowData[columns.SELECTED] = 1;
+            } else {
+                rowData[columns.SELECTED] = 0;
+            }
         }
     })
 
