@@ -3,7 +3,7 @@ function hexToRGBA(hex, alpha) {
         g = parseInt(hex.slice(2, 4), 16),
         b = parseInt(hex.slice(4, 6), 16);
 
-    return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
 }
 
 

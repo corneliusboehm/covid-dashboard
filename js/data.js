@@ -1,9 +1,9 @@
-const baseDataURL = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/";
+const baseDataURL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/';
 const restCountriesURL = 'https://restcountries.eu/rest/v2/all?fields=name;population;flag'
-const firstDate = "1/22/20";
+const firstDate = '1/22/20';
 let latestDate = null;
-const inputCategories = ["deaths", "confirmed", "recovered"];
-const categories = ["deaths", "confirmed", "recovered", "active"];
+const inputCategories = ['deaths', 'confirmed', 'recovered'];
+const categories = ['deaths', 'confirmed', 'recovered', 'active'];
 const countryKey = 'Country/Region';
 const provinceKey = 'Province/State';
 
@@ -27,7 +27,7 @@ const columns = {
 }
 
 // Button group status
-let selectedCategories = ["active"];
+let selectedCategories = ['active'];
 let selectedMetric = 'total';
 let relative = false;
 let logScale = false;
@@ -99,7 +99,7 @@ $(document).ready( function () {
 
     // Load COVID data
     for (const category of inputCategories) {
-        loadCSV(category, "time_series_covid19_" + category + "_global.csv");
+        loadCSV(category, 'time_series_covid19_' + category + '_global.csv');
     }
 
     // Load population data
@@ -111,16 +111,16 @@ $(document).ready( function () {
     // Initialize country selection table
     table = $('#countryTable').DataTable({
         scrollX: true,
-        scrollY: "300px",
+        scrollY: '300px',
         scrollCollapse: true,
         paging: false,
         order: [[columns.SELECTED, 'desc'], [ columns.COUNTRY, 'asc' ]],
         columnDefs: [
-            {"orderable": false, "targets": [columns.FLAG]},
-            {"className": "dt-body-center", "targets": [columns.FLAG]},
+            {'orderable': false, 'targets': [columns.FLAG]},
+            {'className': 'dt-body-center', 'targets': [columns.FLAG]},
             // Prevent visibility toggling
-            {"className": "noVis", "targets": [columns.FLAG, columns.COUNTRY, columns.SELECTED]},
-            {"searchable": false, "targets": [
+            {'className': 'noVis', 'targets': [columns.FLAG, columns.COUNTRY, columns.SELECTED]},
+            {'searchable': false, 'targets': [
                 columns.FLAG,
                 columns.CONFIRMED_TOTAL,
                 columns.DEATHS_TOTAL,
@@ -130,7 +130,7 @@ $(document).ready( function () {
                 columns.RECOVERED_RELATIVE,
                 columns.SELECTED,
             ]},
-            {"visible": false, "targets": [
+            {'visible': false, 'targets': [
                 columns.RECOVERED_TOTAL,
                 columns.RECOVERED_RELATIVE,
                 columns.SELECTED,
@@ -455,7 +455,7 @@ function updateHeader() {
         let total = data.total[category].toLocaleString('en-US');
         let trend = data.trend[category].toLocaleString('en-US');
         if (data.trend[category] >= 0) {
-            trend = "+" + trend;
+            trend = '+' + trend;
         }
         $('#' + category + 'Header').html(total + '<br />(' + trend + ')');
     }
@@ -470,7 +470,7 @@ function updateTableData() {
         let pop100k = pop != null ? pop / 100000 : null
 
         let flagURL = getFlag(country);
-        let flag = flagURL != null ? "<img src='" + flagURL + "' class='flag'>" : null;
+        let flag = flagURL != null ? '<img src="' + flagURL + '" class="flag">' : null;
 
         let deaths = row[lastDate];
         let deathsRelative = '';

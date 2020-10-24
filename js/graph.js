@@ -145,13 +145,13 @@ $(document).ready( function () {
     clipboard.on('success', function(e) {
         // Show success alert
         $('#alertURLSuccess').fadeIn('fast');
-        setTimeout("$('#alertURLSuccess').fadeOut('fast')", 2000);
+        setTimeout('$("#alertURLSuccess").fadeOut("fast")', 2000);
     });
 
     clipboard.on('error', function(e) {
         // Show error alert
         $('#alertURLError').fadeIn('fast');
-        setTimeout("$('#alertURLError').fadeOut('fast')", 2000);
+        setTimeout('$("#alertURLError").fadeOut("fast")', 2000);
     });
 
     // Setup "Download Image" button
@@ -194,14 +194,14 @@ function generateUniqueLabels(x) {
     // Add some space
     labels.push({
         text: '',
-        fillStyle: "rgba(0, 0, 0, 0.0)",
+        fillStyle: 'rgba(0, 0, 0, 0.0)',
         hidden: false,
         lineCap: 'butt',
         lineDash: [],
         lineDashOffset: 0,
         lineJoin: 'miter',
         lineWidth: 3,
-        strokeStyle: "rgba(0, 0, 0, 0)",
+        strokeStyle: 'rgba(0, 0, 0, 0)',
         pointStyle: null,
         rotation: null
     });
@@ -210,14 +210,14 @@ function generateUniqueLabels(x) {
     for (idx = 0; idx < currentCategories.length; idx++) {
         labels.push({
             text: currentCategories[idx],
-            fillStyle: "rgba(0, 0, 0, 0)",
+            fillStyle: 'rgba(0, 0, 0, 0)',
             hidden: false,
             lineCap: 'butt',
             lineDash: lineStyles[idx],
             lineDashOffset: 0,
             lineJoin: 'miter',
             lineWidth: 3,
-            strokeStyle: "rgba(0.2, 0.2, 0.2, 0.5)",
+            strokeStyle: 'rgba(0.2, 0.2, 0.2, 0.5)',
             pointStyle: null,
             rotation: null
         });
