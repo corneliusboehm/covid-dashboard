@@ -102,8 +102,9 @@ $(document).ready( function () {
         columnDefs: [
             { "orderable": false, "targets": [0] },
             { "className": "dt-body-center", "targets": [0] },
+            { "className": "noVis", "targets": [0, 1, 8] },   // Prevent visibility toggling
             { "searchable": false, "targets": [0, 2, 3, 4, 5, 6, 7, 8] },
-            { "visible": false, "targets": 8 }
+            { "visible": false, "targets": [4, 7, 8] }
         ],
         aoColumns: [
             null,
@@ -122,6 +123,11 @@ $(document).ready( function () {
                 action: function (e, dt, node, config) {
                     table.search('').order([[8, 'desc'], [1, 'asc']]).draw();
                 }
+            },
+            {
+                extend: 'colvis',
+                columns: ':not(.noVis)',
+                text: '<img class="icon" src="img/Columns.svg"/> Toggle columns',
             }
         ]
     } );
