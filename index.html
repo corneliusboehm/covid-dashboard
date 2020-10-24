@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 
     <head>
@@ -6,34 +6,280 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+        <title>Interactive COVID-19 Dashboard</title>
+        <meta name="author" content="Cornelius Böhm">
+        <meta name="description" content="Interactive time-based analysis of COVID-19 case numbers all over the world."/>
+        <meta property="og:title" content="Interactive COVID-19 Dashboard"/>
+        <meta property="og:description" content="Interactive time-based analysis of COVID-19 case numbers all over the world."/>
+        <meta property="og:image" content="https://corneliusboehm.github.io/img/chart.png"/>
+        <meta property="og:url" content="http://corneliusboehm.github.io/corona.html"/>
+        <meta property="og:type" content="website"/>
+        <link rel="icon" type="image/svg" href="/img/Favicon.svg"/>
+
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.bootstrap4.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.css">
         <link rel="stylesheet" href="css/main.css">
     </head>
 
     <body>
-        <h1 class="text-center mt-3">Cornelius Böhm</h1>
-        <h3 class="text-center mt-3"><small class="text-muted">A.I. Engineer | Python Developer</small></h3>
+        <div class="container fixed-top alert-container">
+            <div class="row">
+                <div class="col-sm-6 mx-auto text-center">
+                    <div id="alertURLSuccess" class="alert alert-success hidden" role="alert">
+                        URL copied to clipboard
+                    </div>
+                    <div id="alertURLError" class="alert alert-danger hidden" role="alert">
+                        Copying URL to clipboard failed
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="text-center mt-3">Interactive COVID-19 Dashboard</h1>
 
         <div class="container">
             <div class="row">
-                <div class="col-md-6 mt-5 mx-auto">
+                <div class="col-md-4 mx-auto">
                     <div class="card bg-light">
-                        <img src="img/chart.png" class="card-img-top" alt="COVID-19 Dashboard">
+                        <div class="card-body text-center">
+                            <span id="latestData" class="card-text large-text">Loading data...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mt-3">
+                    <div class="card text-white bg-danger">
+                        <div class="card-header">
+                            Total Confirmed
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                                title="Total number of global confirmed cases and average increase over the last three days">
+                            </img>
+                        </div>
+                        <div class="card-body text-center">
+                            <p id="confirmedHeader" class="card-text x-large-text"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <div class="card text-white bg-secondary">
+                        <div class="card-header">
+                            Total Deaths
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                                title="Total number of global death cases and average increase over the last three days">
+                            </img>
+                        </div>
+                        <div class="card-body text-center">
+                            <p id="deathsHeader" class="card-text x-large-text"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-header">
+                            Total Recovered
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                                title="Total number of global recovered cases and average increase over the last three days">
+                            </img>
+                        </div>
+                        <div class="card-body text-center">
+                            <p id="recoveredHeader" class="card-text x-large-text"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-header">
+                            Active
+                            <img class="icon" src="img/Info.svg" data-toggle="tooltip" data-placement="top" data-trigger="click"
+                                title="Number of global active cases and average trend over the last three days">
+                            </img>
+                        </div>
+                        <div class="card-body text-center">
+                            <p id="activeHeader" class="card-text x-large-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="btn-toolbar" role="toolbar">
+                                <div class="col-sm-1 control-title text-sm-right">Data</div>
+                                <div class="btn-group btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelConfirmed"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show confirmed cases">
+                                        <input type="checkbox" id="buttonConfirmed">
+                                        <img class="icon" src="img/Virus.svg"/>
+                                        Confirmed
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelDeaths"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show death cases">
+                                        <input type="checkbox" id="buttonDeaths">
+                                        <img class="icon" src="img/Death.svg"/>
+                                        Deaths
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelRecovered"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show recovered cases">
+                                        <input type="checkbox" id="buttonRecovered">
+                                        <img class="icon" src="img/Health.svg"/>
+                                        Recovered
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelActive"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show active cases">
+                                        <input type="checkbox" id="buttonActive">
+                                        <img class="icon" src="img/Fever.svg"/>
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-toolbar mt-2" role="toolbar">
+                                <div class="col-sm-1 control-title text-sm-right">Metric</div>
+                                <div class="btn-group btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelTotal"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show total number of cases">
+                                        <input type="radio" name="metric" id="buttonTotal">
+                                        <img class="icon" src="img/Sum.svg"/>
+                                        Total
+                                    </label>
+                                    <label class="btn btn-secondary" id="labelChange"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show number of new cases per day">
+                                        <input type="radio" name="metric" id="buttonChange">
+                                        <img class="icon" src="img/Change.svg"/>
+                                        New cases
+                                    </label>
+                                </div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelRelative"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show number of cases in a country per 100,000 inhabitants">
+                                        <input type="checkbox" id="buttonRelative">
+                                        <img class="icon" src="img/Average.svg"/>
+                                        Per 100k
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-toolbar mt-2" role="toolbar">
+                                <div class="col-sm-1 control-title text-sm-right">Layout</div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelLog"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Switch to logarithmic scale">
+                                        <input type="checkbox" id="buttonLog">
+                                        <img class="icon" src="img/Logarithm.svg"/>
+                                        Logarithmic scale
+                                    </label>
+                                </div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelAligned"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Align curves by the date of the 10th death case">
+                                        <input type="checkbox" id="buttonAligned">
+                                        <img class="icon" src="img/Align.svg"/>
+                                        Aligned
+                                    </label>
+                                </div>
+                                <div class="btn-group-toggle mr-2" role="group" data-toggle="buttons">
+                                    <label class="btn btn-secondary" id="labelSmoothed"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Apply 7-day moving average">
+                                        <input type="checkbox" id="buttonSmoothed">
+                                        <img class="icon" src="img/Smoothing.svg"/>
+                                        Smoothed
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title">COVID-19 Dashboard</h5>
-                            <p class="card-text">
-                                Interactive time-based analysis of COVID-19 case numbers all over the world.
-                            </p>
-                            <a href="corona.html" class="btn btn-primary stretched-link">Go to Dashboard</a>
+                            <canvas id="graph"></canvas>
+                        </div>
+                        <div class="card-footer">
+                            <label id="buttonResetZoom" class="btn btn-secondary">
+                                <img class="icon" src="img/Zoom.svg"/>
+                                Reset zoom
+                            </label>
+                            <label id="buttonShare" class="btn btn-secondary">
+                                <img class="icon" src="img/Share.svg"/>
+                                Share URL
+                            </label>
+                            <label id="buttonDownloadImg" class="btn btn-secondary">
+                                <img class="icon" src="img/Download.svg"/>
+                                Download graph
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table id="countryTable" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Country</th>
+                                        <th>Confirmed</th>
+                                        <th>Deaths</th>
+                                        <th>Recovered</th>
+                                        <th>Confirmed (per 100k)</th>
+                                        <th>Deaths (per 100k)</th>
+                                        <th>Recovered (per 100k)</th>
+                                        <th>Selected</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
              </div>
         </div>
 
+        <!-- Footer -->
+        <footer class="page-footer font-small pt-4 mb-2">
+            <div class="container text-center">
+                COVID-19 data from
+                <a href="https://github.com/CSSEGISandData/COVID-19">
+                    COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University
+                </a>
+            </div>
+            <div class="container text-center">
+                Population data from
+                <a href="https://restcountries.eu/">
+                    REST Countries
+                </a>
+                and Wikipedia
+            </div>
+        </footer>
+
         <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.bootstrap4.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.colVis.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-deferred@1.0.1"></script>
+        <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/google-palette@1.1.0/palette.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+        <script src="js/utils.js"></script>
+        <script src="js/graph.js"></script>
+        <script src="js/data.js"></script>
 
     </body>
 
