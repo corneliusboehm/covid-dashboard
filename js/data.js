@@ -1,17 +1,17 @@
-const baseDataURL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/' + 
-                    'csse_covid_19_data/csse_covid_19_time_series/';
-const restCountriesURL = 'https://restcountries.eu/rest/v2/all?fields=name;population;flag'
-const firstDate = '1/22/20';
+const BASE_DATA_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/' + 
+                      'csse_covid_19_data/csse_covid_19_time_series/';
+const REST_COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name;population;flag'
+const FIRST_DATE = '1/22/20';
 let latestDate = null;
-const inputCategories = ['deaths', 'confirmed', 'recovered'];
-const categories = ['deaths', 'confirmed', 'recovered', 'active'];
-const countryKey = 'Country/Region';
-const provinceKey = 'Province/State';
-const worldName = 'World';
+const INPUT_CATEGORIES = ['deaths', 'confirmed', 'recovered'];
+const CATEGORIES = ['deaths', 'confirmed', 'recovered', 'active'];
+const COUNTRY_KEY = 'Country/Region';
+const PROVINCE_KEY = 'Province/State';
+const WORLD_NAME = 'World';
 
 // Table status
 let selectedCountries = [
-    worldName,
+    WORLD_NAME,
     'Germany',
     'US'
 ];
@@ -100,12 +100,12 @@ $(document).ready( function () {
     parseURLParams();
 
     // Load COVID data
-    for (const category of inputCategories) {
+    for (const category of INPUT_CATEGORIES) {
         loadCSV(category, 'time_series_covid19_' + category + '_global.csv');
     }
 
     // Load population data
-    $.getJSON(restCountriesURL, function(populationData) {
+    $.getJSON(REST_COUNTRIES_URL, function(populationData) {
         population = populationData;
         updateData();
     } );
@@ -250,14 +250,14 @@ $(document).ready( function () {
 
 
 function loadCSV(category, file) {
-    let results = Papa.parse(baseDataURL + file, {
+    let results = Papa.parse(BASE_DATA_URL + file, {
         download: true,
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true,
         complete: function(results) {
             let fields = results.meta.fields;
-            const firstDateIdx = fields.indexOf(firstDate);
+            const firstDateIdx = fields.indexOf(FIRST_DATE);
             let keys = fields.slice(0, firstDateIdx);
             let dates = fields.slice(firstDateIdx, fields.length);
 
@@ -320,7 +320,7 @@ function updateCategories(category, selected) {
 
 
 function updateData() {
-    if (inputCategories.every(category => category in data) && population) {
+    if (INPUT_CATEGORIES.every(category => category in data) && population) {
         cleanData();
         aggregateData();
         updateHeader();
@@ -330,7 +330,7 @@ function updateData() {
 
 
 function cleanData() {
-    for (const category of inputCategories) {
+    for (const category of INPUT_CATEGORIES) {
         provinces = [];
         countries = {};
         categoryData = data[category].data;
@@ -338,8 +338,8 @@ function cleanData() {
 
         // Sort data into countries and provinces
         for (row of categoryData) {
-            if (row[provinceKey] === null) {
-                countries[row[countryKey]] = row;
+            if (row[PROVINCE_KEY] === null) {
+                countries[row[COUNTRY_KEY]] = row;
             } else {
                 provinces.push(row);
             }
@@ -348,13 +348,13 @@ function cleanData() {
         // Sum up provinces or make them their own countries
         summedCountries = {};
         for (province of provinces) {
-            country = province[countryKey];
-            provinceName = province[provinceKey];
+            country = province[COUNTRY_KEY];
+            provinceName = province[PROVINCE_KEY];
 
             if (country in countries) {
                 // The mainland of this country already has an entry,
                 // make this one it's own entry
-                province[countryKey] = provinceName;
+                province[COUNTRY_KEY] = provinceName;
                 countries[provinceName] = province;
             } else if (country in summedCountries) {
                 summedRow = summedCountries[country];
@@ -386,7 +386,7 @@ function aggregateData() {
     }
 
     for (const deathRow of data.deaths.data) {
-        const country = deathRow[countryKey];
+        const country = deathRow[COUNTRY_KEY];
         let confirmedRow = findCountryData(country, 'confirmed');
         let recoveredRow = findCountryData(country, 'recovered');
 
@@ -415,13 +415,13 @@ function aggregateData() {
         globalPopulation += entry.population
     }
     population.push({
-        name: worldName,
+        name: WORLD_NAME,
         population: globalPopulation,
         flag: 'img/Globe.png',  // Source: http://www.pngplay.com/image/11497
     });
 
     // Aggregate global data
-    for (const category of categories) {
+    for (const category of CATEGORIES) {
         let categoryData = data[category];
 
         // Sum up global data
@@ -432,7 +432,7 @@ function aggregateData() {
             }
         }
 
-        globalData[countryKey] = worldName;
+        globalData[COUNTRY_KEY] = WORLD_NAME;
         categoryData.data.push(globalData);
 
         // Save total
@@ -453,7 +453,7 @@ function updateHeader() {
     $('#latestData').html('Latest data: ' + new Date(latestDate).toDateString());
 
     // Update global count boxes
-    for (const category of categories) {
+    for (const category of CATEGORIES) {
         let total = data.total[category].toLocaleString('en-US');
         let trend = data.trend[category].toLocaleString('en-US');
         if (data.trend[category] >= 0) {
@@ -467,7 +467,7 @@ function updateHeader() {
 function updateTableData() {
     let lastDate = data.deaths.dates[data.deaths.dates.length - 1];
     for (const row of data.deaths.data) {
-        let country = row[countryKey];
+        let country = row[COUNTRY_KEY];
         let pop = getPopulation(country);
         let pop100k = pop != null ? pop / 100000 : null
 
@@ -609,14 +609,14 @@ function updateTableHighlights() {
 
         if (selectedCountries.includes(country)) {
             $(this.node()).addClass('table-primary');
-            if (country === worldName) {
+            if (country === WORLD_NAME) {
                 rowData[columns.SELECTED] = 3;
             } else {
                 rowData[columns.SELECTED] = 2;
             }
         } else {
             $(this.node()).removeClass('table-primary');
-            if (country === worldName) {
+            if (country === WORLD_NAME) {
                 rowData[columns.SELECTED] = 1;
             } else {
                 rowData[columns.SELECTED] = 0;
@@ -658,7 +658,7 @@ function getFlag(country) {
 
 
 function findCountryData(country, category) {
-    return data[category].data.find(row => row[countryKey] === country);
+    return data[category].data.find(row => row[COUNTRY_KEY] === country);
 }
 
 

@@ -1,5 +1,5 @@
-const colors = palette('mpn65', 65);
-const lineStyles = [
+const COLORS = palette('mpn65', 65);
+const LINE_STYLES = [
     [],
     [5, 2],
     [1, 1],
@@ -174,7 +174,7 @@ function generateUniqueLabels(x) {
 
     // Create country labels
     for (const name in datasets) {
-        let baseColor = colors[datasets[name].colorIdx];
+        let baseColor = COLORS[datasets[name].colorIdx];
 
         labels.push({
             text: name,
@@ -213,7 +213,7 @@ function generateUniqueLabels(x) {
             fillStyle: 'rgba(0, 0, 0, 0)',
             hidden: false,
             lineCap: 'butt',
-            lineDash: lineStyles[idx],
+            lineDash: LINE_STYLES[idx],
             lineDashOffset: 0,
             lineJoin: 'miter',
             lineWidth: 3,
@@ -238,7 +238,7 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
         if (numDatasets > 0) {
             colorIdx = [...Array(numDatasets + 1).keys()].find(function(idx) {
                 return !colorIndices.includes(idx);
-            }) % colors.length;
+            }) % COLORS.length;
         }
 
         datasets[country] = {
@@ -254,7 +254,7 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
     }
 
     // Create dataset
-    let baseColor = colors[colorIdx];
+    let baseColor = COLORS[colorIdx];
     let countryData = getCountryData(country, category, metric, relative, aligned, smoothed);
 
     let dataset = {
@@ -267,7 +267,7 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
         pointRadius: 0,
         pointHoverRadius: 0,
         borderDash: function() {
-            return lineStyles[currentCategories.findIndex(c => c === category)];
+            return LINE_STYLES[currentCategories.findIndex(c => c === category)];
         }
     };
 
