@@ -8,6 +8,11 @@ $(document).ready( function () {
 function parseURLParams() {
     let url = new URL(window.location.href);
     let params = url.searchParams;
+    
+    if (Array.from(params).length == 0) {
+        // Use default parameters
+        return;
+    }
 
     let paramCountries = params.get('countries');
     if (paramCountries) {
