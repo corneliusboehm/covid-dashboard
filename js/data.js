@@ -247,7 +247,7 @@ function updateHeader() {
             increase = '+' + increase;
         }
         $('#' + category + 'Global').html(total);
-        $('#' + category + 'GlobalIncrease').html(increase + ' on last day');
+        $('#' + category + 'GlobalIncrease').html(increase + ' new cases');
     }
 }
 

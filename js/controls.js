@@ -1,8 +1,8 @@
-let selectedCategories = ['active'];
-let selectedMetric = 'total';
-let relative = false;
+let selectedCategories = ['confirmed'];
+let selectedMetric = 'change';
+let relative = true;
 let logScale = false;
-let smoothed = false;
+let smoothed = true;
 
 
 $(document).ready( function () {
