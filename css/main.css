@@ -10,6 +10,10 @@
   height: 18px;
 }
 
+.favicon {
+  height: 30px;
+}
+
 .flag {
   height: auto;
   width: auto;

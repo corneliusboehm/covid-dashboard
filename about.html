@@ -11,24 +11,47 @@
     </head>
 
     <body>
-        <h1 class="text-center mt-3">Cornelius Böhm</h1>
-        <h3 class="text-center mt-3"><small class="text-muted">A.I. Engineer | Python Developer</small></h3>
+        <div class="d-flex flex-column flex-md-row p-1 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+            <nav class="navbar navbar-light">
+                <a class="navbar-brand" href="index.html">
+                    <img class="favicon mr-1" src="img/Favicon.svg"/>
+                    Interactive COVID-19 Dashboard
+                </a>
+            </nav>
+        </div>
 
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 mt-5 mx-auto">
-                    <div class="card bg-light">
-                        <img src="img/chart.png" class="card-img-top" alt="COVID-19 Dashboard">
-                        <div class="card-body">
-                            <h5 class="card-title">COVID-19 Dashboard</h5>
-                            <p class="card-text">
-                                Interactive time-based analysis of COVID-19 case numbers all over the world.
-                            </p>
-                            <a href="corona.html" class="btn btn-primary stretched-link">Go to Dashboard</a>
-                        </div>
-                    </div>
-                </div>
-             </div>
+            <h2 class="pt-md-5">Author</h4>
+            <h5 class="pt-md-2 pb-md-2">
+                This dashboard was developed by Cornelius Böhm, A.I. Engineer and Python developer at
+                <a href="https://20bn.com/">TwentyBN</a>.
+            </h5>
+            <a class="btn btn-outline-primary" href="https://github.com/corneliusboehm">GitHub</a>
+            <a class="btn btn-outline-primary" href="https://www.linkedin.com/in/corneliusboehm/">LinkedIn</a>
+             
+            <h2 class="pt-md-5">Data</h4>
+            <h5 class="pt-md-2">
+                COVID-19 data is loaded from the
+                <a href="https://github.com/CSSEGISandData/COVID-19">
+                    COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University.
+                </a>
+            </h5>
+            <h5 class="pt-md-2 pb-md-4">
+                Population data is loaded from
+                <a href="https://restcountries.eu/">
+                    REST Countries
+                </a>
+                and some gaps are filled from Wikipedia.
+            </h5>
+             
+             <footer class="my-md-5 pt-md-4 border-top">
+                 <div class="row">
+                     <div class="col-md-12 text-right mx-auto">
+                         <a class="p-2 text-dark" href="https://github.com/corneliusboehm/corneliusboehm.github.io">Github</a>
+                         <a class="p-2 text-dark" href="about.html">About</a>
+                     </div>
+                 </div>
+             </footer>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
