@@ -11,7 +11,12 @@ const WORLD_NAME = 'World';
 
 let data = {
     total: {},
-    trend: {}
+    increase: {},
+    // Categories added later:
+    // deaths
+    // confirmed
+    // recovered
+    // active
 };
 let population;
 
@@ -161,7 +166,8 @@ function aggregateData() {
     let dates = data.deaths.dates;
 
     // Get latest date
-    latestDate = dates[dates.length - 1];
+    numDates = dates.length
+    latestDate = dates[numDates - 1];
 
     // Calculate active cases from other categories
     data['active'] = {
@@ -221,14 +227,10 @@ function aggregateData() {
         categoryData.data.push(globalData);
 
         // Save total
-        data.total[category] = globalData[dates[dates.length - 1]];
+        data.total[category] = globalData[dates[numDates - 1]];
 
-        // Calculate trend over last three days
-        let diffs = [];
-        for (let idx = dates.length - 3; idx < dates.length; idx++) {
-            diffs.push(globalData[dates[idx]] - globalData[dates[idx - 1]]);
-        }
-        data.trend[category] = Math.round(diffs.reduce((a,b) => a + b, 0) / diffs.length);
+        // Calculate latest increase
+        data.increase[category] = globalData[dates[numDates - 1]] - globalData[dates[numDates - 2]];
     }
 }
 
@@ -240,11 +242,12 @@ function updateHeader() {
     // Update global count boxes
     for (const category of CATEGORIES) {
         let total = data.total[category].toLocaleString('en-US');
-        let trend = data.trend[category].toLocaleString('en-US');
-        if (data.trend[category] >= 0) {
-            trend = '+' + trend;
+        let increase = data.increase[category].toLocaleString('en-US');
+        if (data.increase[category] >= 0) {
+            increase = '+' + increase;
         }
-        $('#' + category + 'Header').html(total + '<br />(' + trend + ')');
+        $('#' + category + 'Global').html(total);
+        $('#' + category + 'GlobalIncrease').html(increase + ' on last day');
     }
 }
 
