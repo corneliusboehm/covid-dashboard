@@ -30,9 +30,6 @@ function parseURLParams() {
     let paramLogscale = params.get('logscale');
     logScale = paramLogscale === 'true' ? true : false;
 
-    let paramAligned = params.get('aligned');
-    aligned = paramAligned === 'true' ? true : false;
-
     let paramSmoothed = params.get('smoothed');
     smoothed = paramSmoothed === 'true' ? true : false;
 }
@@ -52,10 +49,6 @@ function updateURL() {
 
     if (logScale) {
         newURLParams.append('logscale', true);
-    }
-
-    if (aligned) {
-        newURLParams.append('aligned', true);
     }
 
     if (smoothed) {

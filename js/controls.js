@@ -2,7 +2,6 @@ let selectedCategories = ['active'];
 let selectedMetric = 'total';
 let relative = false;
 let logScale = false;
-let aligned = false;
 let smoothed = false;
 
 
@@ -55,13 +54,6 @@ $(document).ready( function () {
     } );
 
 
-    // Aligned button
-    $('#buttonAligned').click( function () {
-        aligned = $(this).prop('checked');
-        updateSelected();
-    } );
-
-
     // Smoothed button
     $('#buttonSmoothed').click( function () {
         smoothed = $(this).prop('checked');
@@ -100,9 +92,6 @@ function initializeButtons() {
 
     // Log-scale button
     setButtonState('Log', logScale);
-
-    // Aligned button
-    setButtonState('Aligned', aligned);
 
     // Smoothed button
     setButtonState('Smoothed', smoothed);

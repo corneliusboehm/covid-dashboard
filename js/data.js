@@ -283,7 +283,7 @@ function findCountryData(country, category) {
 }
 
 
-function getCountryData(country, category, metric, relative, aligned, smoothed) {
+function getCountryData(country, category, metric, relative, smoothed) {
     let dataCountry = findCountryData(country, category);
 
     if (!dataCountry) {
@@ -328,27 +328,6 @@ function getCountryData(country, category, metric, relative, aligned, smoothed) 
         }
 
         output = newOutput;
-    }
-
-    if (aligned) {
-        let deathData = getCountryData(country, 'deaths', 'total', false, false, smoothed);
-        let alignmentIndex = deathData.findIndex(function(value) {
-            return value >= 10;
-        } );
-
-        if (alignmentIndex >= 0) {
-            output = output.slice(alignmentIndex);
-
-            // Provide scatter data for linear x-axis
-            for (idx = 0; idx < output.length; idx++) {
-                output[idx] = {
-                    x: idx,
-                    y: output[idx]
-                };
-            }
-        } else {
-            output = [];
-        }
     }
 
     return output;

@@ -112,7 +112,7 @@ function updateTableData() {
             deathsRelative = Math.round(deaths / pop100k);
         }
 
-        let confirmed = getCountryData(country, 'confirmed', 'total', false, false, false);
+        let confirmed = getCountryData(country, 'confirmed', 'total', false, false);
         let confirmedRelative = '';
         if (confirmed != null) {
             confirmed = confirmed[confirmed.length - 1];
@@ -124,7 +124,7 @@ function updateTableData() {
             confirmed = 0;
         }
 
-        let recovered = getCountryData(country, 'recovered', 'total', false, false, false);
+        let recovered = getCountryData(country, 'recovered', 'total', false, false);
         let recoveredRelative = ''
         if (recovered != null) {
             recovered = recovered[recovered.length - 1];
@@ -165,7 +165,6 @@ function updateSelected() {
         selectedMetric,
         relative,
         logScale,
-        aligned,
         smoothed,
     );
 }

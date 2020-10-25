@@ -41,10 +41,6 @@ $(document).ready( function () {
                     time: {
                         unit: 'day'
                     },
-                    scaleLabel: {
-                        display: false,
-                        labelString: '# of days after 10th death case'
-                    },
                     ticks: {
                         callback: function(value, index, values) {
                             // Block decimal ticks when panning or zooming
@@ -55,7 +51,11 @@ $(document).ready( function () {
                     }
                 }],
                 yAxes: [{
-                    type: 'linear'
+                    type: 'linear',
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Total number of cases'
+                    },
                 }]
             },
             maintainAspectRatio: false,
@@ -227,7 +227,7 @@ function generateUniqueLabels(x) {
 }
 
 
-function createDataset(country, category, metric, relative, aligned, smoothed) {
+function createDataset(country, category, metric, relative, smoothed) {
     let colorIdx = 0;
 
     if (!(country in datasets)) {
@@ -246,7 +246,6 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
             colorIdx: colorIdx,
             metric: metric,
             relative: relative,
-            aligned: aligned,
             smoothed: smoothed
         };
     } else {
@@ -255,7 +254,7 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
 
     // Create dataset
     let baseColor = COLORS[colorIdx];
-    let countryData = getCountryData(country, category, metric, relative, aligned, smoothed);
+    let countryData = getCountryData(country, category, metric, relative, smoothed);
 
     let dataset = {
         label: country,
@@ -277,7 +276,7 @@ function createDataset(country, category, metric, relative, aligned, smoothed) {
 }
 
 
-function updateDataset(country, metric, relative, aligned, smoothed) {
+function updateDataset(country, metric, relative, smoothed) {
     let dataset = datasets[country];
 
     for (const category in dataset.categories) {
@@ -286,14 +285,12 @@ function updateDataset(country, metric, relative, aligned, smoothed) {
             category,
             metric,
             relative,
-            aligned,
             smoothed,
         );
     }
 
     dataset.relative = relative;
     dataset.metric = metric;
-    dataset.aligned = aligned;
     dataset.smoothed = smoothed;
 }
 
@@ -304,7 +301,6 @@ function updateGraph(data,
                      selectedMetric,
                      relative,
                      logScale,
-                     aligned,
                      smoothed)
 {
     graph.data.datasets = [];
@@ -341,10 +337,9 @@ function updateGraph(data,
         if (country in datasets
             && (datasets[country].metric !== selectedMetric
                 || datasets[country].relative !== relative
-                || datasets[country].aligned !== aligned
                 || datasets[country].smoothed !== smoothed))
         {
-            updateDataset(country, selectedMetric, relative, aligned, smoothed);
+            updateDataset(country, selectedMetric, relative, smoothed);
         }
 
         // Check for categories
@@ -357,55 +352,39 @@ function updateGraph(data,
                     category,
                     selectedMetric,
                     relative,
-                    aligned,
                     smoothed,
                 ));
             }
         }
     }
 
-    // Change labels for aligned mode
-    if (aligned) {
-        let maxLen = 0;
-        for (const dataset of Object.values(datasets)) {
-            for (const category of Object.values(dataset.categories)) {
-                if (category.data.length > maxLen) {
-                    maxLen = category.data.length;
-                }
-            }
-        }
+    // Update labels
+    graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
 
-        // Update axes
-        graph.options.scales.xAxes[0].type = 'linear';
-        graph.options.scales.xAxes[0].scaleLabel.display = true;
-
-        // Update labels
-        graph.data.labels = null;
-
-        // Update pan/zoom ranges
-        graph.options.plugins.zoom.pan.rangeMin.x = 0;
-        graph.options.plugins.zoom.pan.rangeMax.x = maxLen - 1;
-        graph.options.plugins.zoom.zoom.rangeMin.x = 0;
-        graph.options.plugins.zoom.zoom.rangeMax.x = maxLen - 1;
-    } else {
-        // Update axes
-        graph.options.scales.xAxes[0].type = 'time';
-        graph.options.scales.xAxes[0].scaleLabel.display = false;
-
-        // Update labels
-        graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
-
-        if (smoothed) {
-            let labels = graph.data.labels;
-            graph.data.labels = graph.data.labels.slice(3, -3);
-        }
-
-        // Update pan/zoom ranges
-        graph.options.plugins.zoom.pan.rangeMin.x = new Date(FIRST_DATE);
-        graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
-        graph.options.plugins.zoom.zoom.rangeMin.x = new Date(FIRST_DATE);
-        graph.options.plugins.zoom.zoom.rangeMax.x = new Date(latestDate);
+    if (smoothed) {
+        let labels = graph.data.labels;
+        graph.data.labels = graph.data.labels.slice(3, -3);
     }
+    
+    // Update axis label
+    let yLabel;
+    if (selectedMetric === 'total') {
+        yLabel = 'Total number of cases';
+    } else {
+        yLabel = 'Daily new cases';
+    }
+    
+    if (relative) {
+        yLabel += ' per 100k inhabitants';
+    }
+    
+    graph.options.scales.yAxes[0].scaleLabel.labelString = yLabel;
+
+    // Update pan/zoom ranges
+    graph.options.plugins.zoom.pan.rangeMin.x = new Date(FIRST_DATE);
+    graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
+    graph.options.plugins.zoom.zoom.rangeMin.x = new Date(FIRST_DATE);
+    graph.options.plugins.zoom.zoom.rangeMax.x = new Date(latestDate);
 
     // Reset zoom and update graph
     graph.resetZoom();
