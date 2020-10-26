@@ -33,6 +33,21 @@ function arraySub(a, b) {
 }
 
 
+function arrayEqual(a, b) {
+    if (a.length != b.length) {
+        return false;
+    }
+
+    for (var i = 0, l=a.length; i < l; i++) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 function NiceScale (lowerBound, upperBound, _maxTicks) {
     // Copied from https://gist.github.com/igodorogea/4f42a95ea31414c3a755a8b202676dfd
 

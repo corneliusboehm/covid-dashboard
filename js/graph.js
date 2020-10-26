@@ -276,17 +276,23 @@ function createDataset(country, category, metric, relative, smoothed) {
 }
 
 
-function updateDataset(country, metric, relative, smoothed) {
+function updateDataset(country, selectedCategories, metric, relative, smoothed) {
     let dataset = datasets[country];
 
-    for (const category in dataset.categories) {
-        dataset.categories[category].data = getCountryData(
-            country,
-            category,
-            metric,
-            relative,
-            smoothed,
-        );
+    if (!arrayEqual(selectedCategories, Object.keys(dataset.categories))) {
+        // Prevent weird error that happens when categories and smoothed change at same time
+        // by clearing the datasets with their meta information
+        dataset.categories = {};
+    } else {
+        for (const category in dataset.categories) {
+            dataset.categories[category].data = getCountryData(
+                country,
+                category,
+                metric,
+                relative,
+                smoothed,
+            );
+        }
     }
 
     dataset.relative = relative;
@@ -323,10 +329,6 @@ function updateGraph(data,
                     delete datasets[country].categories[category];
                 }
             }
-
-            if (jQuery.isEmptyObject(datasets[country].categories)) {
-                delete datasets[country];
-            }
         }
     }
 
@@ -339,7 +341,7 @@ function updateGraph(data,
                 || datasets[country].relative !== relative
                 || datasets[country].smoothed !== smoothed))
         {
-            updateDataset(country, selectedMetric, relative, smoothed);
+            updateDataset(country, selectedCategories, selectedMetric, relative, smoothed);
         }
 
         // Check for categories
@@ -362,7 +364,6 @@ function updateGraph(data,
     graph.data.labels = Array.from(data.deaths.dates, date => new Date(date));
 
     if (smoothed) {
-        let labels = graph.data.labels;
         graph.data.labels = graph.data.labels.slice(3, -3);
     }
     
@@ -381,10 +382,12 @@ function updateGraph(data,
     graph.options.scales.yAxes[0].scaleLabel.labelString = yLabel;
 
     // Update pan/zoom ranges
-    graph.options.plugins.zoom.pan.rangeMin.x = new Date(FIRST_DATE);
-    graph.options.plugins.zoom.pan.rangeMax.x = new Date(latestDate);
-    graph.options.plugins.zoom.zoom.rangeMin.x = new Date(FIRST_DATE);
-    graph.options.plugins.zoom.zoom.rangeMax.x = new Date(latestDate);
+    let labels = graph.data.labels;
+    let numLabels = labels.length;
+    graph.options.plugins.zoom.pan.rangeMin.x = labels[0];
+    graph.options.plugins.zoom.pan.rangeMax.x = labels[numLabels - 1];
+    graph.options.plugins.zoom.zoom.rangeMin.x = labels[0];
+    graph.options.plugins.zoom.zoom.rangeMax.x = labels[numLabels - 1];
 
     // Reset zoom and update graph
     graph.resetZoom();

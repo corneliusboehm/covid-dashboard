@@ -6,6 +6,38 @@ let smoothed = true;
 
 
 $(document).ready( function () {
+    // Quick buttons
+    $('#buttonQuickNewConfirmed').click( function () {
+        selectedCategories = ['confirmed'];
+        selectedMetric = 'change';
+        relative = true;
+        logScale = false;
+        smoothed = true;
+
+        updateSelected();
+    } );
+    
+    $('#buttonQuickActive').click( function () {
+        selectedCategories = ['active'];
+        selectedMetric = 'total';
+        relative = true;
+        logScale = false;
+        smoothed = false;
+
+        updateSelected();
+    } );
+    
+    $('#buttonQuickTotals').click( function () {
+        selectedCategories = ['confirmed', 'deaths'];
+        selectedMetric = 'total';
+        relative = false;
+        logScale = false;
+        smoothed = false;
+
+        updateSelected();
+    } );
+    
+    
     // Category buttons
     $('#buttonConfirmed').click( function () {
         updateCategories('confirmed', $(this).prop('checked'));
@@ -60,8 +92,35 @@ $(document).ready( function () {
         updateSelected();
     } );
 
-    initializeButtons();
+    updateButtons();
+    flipButtonGroups();
 } );
+
+
+$(window).on('resize', function() {
+    flipButtonGroups();
+});
+
+
+function flipButtonGroups() {
+    let width = $(window).width();
+    
+    if (width > 755) {
+        $('#quickControls').removeClass('btn-group-vertical');
+        $('#quickControls').addClass('btn-group');
+    } else {
+        $('#quickControls').removeClass('btn-group');
+        $('#quickControls').addClass('btn-group-vertical');
+    }
+    
+    if (width > 755) {
+        $('#dataButtonGroup').removeClass('btn-group-vertical');
+        $('#dataButtonGroup').addClass('btn-group');
+    } else {
+        $('#dataButtonGroup').removeClass('btn-group');
+        $('#dataButtonGroup').addClass('btn-group-vertical');
+    }
+}
 
 
 function setButtonState(name, checked) {
@@ -76,7 +135,28 @@ function setButtonState(name, checked) {
 }
 
 
-function initializeButtons() {
+function updateButtons() {
+    // Quick buttons
+    let quickConfirmed = (arrayEqual(selectedCategories, ['confirmed'])
+                          && selectedMetric === 'change'
+                          && relative
+                          && !logScale
+                          && smoothed);
+    setButtonState('QuickNewConfirmed', quickConfirmed);
+    let quickActive = (arrayEqual(selectedCategories, ['active'])
+                       && selectedMetric === 'total'
+                       && relative
+                       && !logScale
+                       && !smoothed);
+    setButtonState('QuickActive', quickActive);
+    let quickTotals = ((arrayEqual(selectedCategories, ['confirmed', 'deaths'])
+                        || arrayEqual(selectedCategories, ['deaths', 'confirmed']))
+                       && selectedMetric === 'total'
+                       && !relative
+                       && !logScale
+                       && !smoothed);
+    setButtonState('QuickTotals', quickTotals);
+    
     // Category buttons
     setButtonState('Confirmed', selectedCategories.includes('confirmed'));
     setButtonState('Deaths', selectedCategories.includes('deaths'));

@@ -212,6 +212,7 @@ function updateTableData() {
 function updateSelected() {
     updateURL();
     updateTableHighlights();
+    updateButtons();
     updateGraph(
         data,
         selectedCountries,
