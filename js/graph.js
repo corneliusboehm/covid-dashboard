@@ -59,6 +59,24 @@ $(document).ready( function () {
                 }]
             },
             maintainAspectRatio: false,
+            tooltips: {
+                mode: 'nearest',
+                callbacks: {
+                    title: function (tooltips, data) {
+                        return new Date(tooltips[0].label).toLocaleDateString(
+                            "en-US", 
+                            { year: 'numeric', month: 'short', day: 'numeric' }
+                        );
+                    },
+                    label: function (tooltip, data) {
+                        let dataset = data.datasets[tooltip.datasetIndex];
+                        let value = parseFloat(tooltip.value);
+                        value = Math.round((value + Number.EPSILON) * 100) / 100;
+                        value = value.toLocaleString('en-US');
+                        return dataset.label + " [" + dataset.category + "]: " + value;
+                    }
+                }
+            },
             plugins: {
                 zoom: {
                     // Container for pan options
@@ -264,10 +282,12 @@ function createDataset(country, category, metric, relative, smoothed) {
         pointBackgroundColor: hexToRGBA(baseColor, 1),
         pointBorderColor: hexToRGBA(baseColor, 1),
         pointRadius: 0,
-        pointHoverRadius: 0,
+        pointHoverRadius: 3,
+        pointHitRadius: 3,
         borderDash: function() {
             return LINE_STYLES[currentCategories.findIndex(c => c === category)];
-        }
+        },
+        category: category,
     };
 
     datasets[country].categories[category] = dataset;
