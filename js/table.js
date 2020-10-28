@@ -123,9 +123,17 @@ $(document).ready( function () {
 
 
 function setupColumnToggles() {
+    // Update styling of the containing div
+    $('#countryTable_wrapper .col-md-6:eq(0)').addClass('text-center');
+    $('#countryTable_wrapper .col-md-6:eq(0)').addClass('text-md-left');
+    
+    // Give the button group an ID for later reference
+    $('#countryTable_wrapper .btn-group').attr('id', 'tableButtons');
+
+    // Add dropdown menu for "Toggle columns"
     $(`
 <div class="btn-group" id="columnToggles">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button class="btn btn-secondary dropdown-toggle text-left" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img class="icon" src="img/Columns.svg"/>
         Toggle columns
     </button>
@@ -153,7 +161,7 @@ function setupColumnToggles() {
         <button class="dropdown-item" id="DEATHS_INCREASE_RELATIVE_TOGGLE" type="button">Deaths</button>
         <button class="dropdown-item" id="RECOVERED_INCREASE_RELATIVE_TOGGLE" type="button">Recovered</button>
     </div>
-</div>`).appendTo('#countryTable_wrapper .btn-group');
+</div>`).appendTo('#tableButtons');
 
     for (column in columns) {
         // Skip columns that should not be toggled
@@ -182,9 +190,13 @@ function setupColumnToggles() {
         } );
     }
 
+    // Prevent the dropdown menu from closing after each click
     $(document).on('click', '#columnToggles .dropdown-menu', function (e) {
         e.stopPropagation();
     });
+    
+    // Make sure button group is correctly oriented
+    flipButtonGroups();
 }
 
 

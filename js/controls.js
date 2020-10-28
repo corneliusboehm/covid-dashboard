@@ -104,7 +104,7 @@ $(window).on('resize', function() {
 
 function flipButtonGroups() {
     let width = $(window).width();
-    
+
     if (width > 755) {
         $('#quickControls').removeClass('btn-group-vertical');
         $('#quickControls').addClass('btn-group');
@@ -112,13 +112,21 @@ function flipButtonGroups() {
         $('#quickControls').removeClass('btn-group');
         $('#quickControls').addClass('btn-group-vertical');
     }
-    
+
     if (width > 755) {
         $('#dataButtonGroup').removeClass('btn-group-vertical');
         $('#dataButtonGroup').addClass('btn-group');
     } else {
         $('#dataButtonGroup').removeClass('btn-group');
         $('#dataButtonGroup').addClass('btn-group-vertical');
+    }
+
+    if (width > 979) {
+        $('#tableButtons').removeClass('btn-group-vertical');
+        $('#tableButtons').addClass('btn-group');
+    } else {
+        $('#tableButtons').removeClass('btn-group');
+        $('#tableButtons').addClass('btn-group-vertical');
     }
 }
 
