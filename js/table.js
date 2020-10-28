@@ -97,11 +97,6 @@ $(document).ready( function () {
                     ]).draw();
                 }
             },
-            {
-                extend: 'colvis',
-                columns: ':not(.noVis)',
-                text: '<img class="icon" src="img/Columns.svg"/> Toggle columns',
-            }
         ]
     } );
     table.buttons().container().appendTo( '#countryTable_wrapper .col-md-6:eq(0)' );
@@ -121,7 +116,76 @@ $(document).ready( function () {
 
         updateSelected();
     } );
+    
+    // Setup "Toggle columns" dropdown
+    setupColumnToggles();
 } );
+
+
+function setupColumnToggles() {
+    $(`
+<div class="btn-group" id="columnToggles">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img class="icon" src="img/Columns.svg"/>
+        Toggle columns
+    </button>
+    <div class="dropdown-menu dropdown-menu-lg-right">
+        <h6 class="dropdown-header">Total cases</h6>
+        <button class="dropdown-item" id="CONFIRMED_TOTAL_TOGGLE" type="button">Confirmed</button>
+        <button class="dropdown-item" id="DEATHS_TOTAL_TOGGLE" type="button">Deaths</button>
+        <button class="dropdown-item" id="RECOVERED_TOTAL_TOGGLE" type="button">Recovered</button>
+        <div class="dropdown-divider"></div>
+
+        <h6 class="dropdown-header">Per 100k</h6>
+        <button class="dropdown-item" id="CONFIRMED_RELATIVE_TOGGLE" type="button">Confirmed</button>
+        <button class="dropdown-item" id="DEATHS_RELATIVE_TOGGLE" type="button">Deaths</button>
+        <button class="dropdown-item" id="RECOVERED_RELATIVE_TOGGLE" type="button">Recovered</button>
+        <div class="dropdown-divider"></div>
+
+        <h6 class="dropdown-header">New cases</h6>
+        <button class="dropdown-item" id="CONFIRMED_INCREASE_TOGGLE" type="button">Confirmed</button>
+        <button class="dropdown-item" id="DEATHS_INCREASE_TOGGLE" type="button">Deaths</button>
+        <button class="dropdown-item" id="RECOVERED_INCREASE_TOGGLE" type="button">Recovered</button>
+        <div class="dropdown-divider"></div>
+
+        <h6 class="dropdown-header">New cases per 100k</h6>
+        <button class="dropdown-item" id="CONFIRMED_INCREASE_RELATIVE_TOGGLE" type="button">Confirmed</button>
+        <button class="dropdown-item" id="DEATHS_INCREASE_RELATIVE_TOGGLE" type="button">Deaths</button>
+        <button class="dropdown-item" id="RECOVERED_INCREASE_RELATIVE_TOGGLE" type="button">Recovered</button>
+    </div>
+</div>`).appendTo('#countryTable_wrapper .btn-group');
+
+    for (column in columns) {
+        // Skip columns that should not be toggled
+        if (['FLAG', 'COUNTRY', 'SELECTED'].includes(column)) {
+            continue;
+        }
+        
+        let tableColumn = table.column(columns[column]);
+        let button = $('#' + column + '_TOGGLE')
+        
+        // Initialize buttons for active columns
+        if (tableColumn.visible()) {
+            button.addClass('active');
+        }
+        
+        // Change column visibility on click
+        button.click( function () {
+            let visibleBefore = tableColumn.visible();
+            tableColumn.visible(!visibleBefore);
+            
+            if (visibleBefore) {
+                $(this).removeClass('active');
+            } else {
+                $(this).addClass('active');
+            }
+        } );
+    }
+
+    $(document).on('click', '#columnToggles .dropdown-menu', function (e) {
+        e.stopPropagation();
+    });
+}
 
 
 function updateTableData() {
