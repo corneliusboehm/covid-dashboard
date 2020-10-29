@@ -201,8 +201,7 @@ function setupColumnToggles() {
 
 
 function updateTableData() {
-    let lastDate = data.deaths.dates[data.deaths.dates.length - 1];
-    let secondToLastDate = data.deaths.dates[data.deaths.dates.length - 2];
+    let dates = data.deaths.dates;
 
     for (const row of data.deaths.data) {
         let country = row[COUNTRY_KEY];
@@ -214,6 +213,19 @@ function updateTableData() {
         // Flag
         let flagURL = getFlag(country);
         let flag = flagURL != null ? '<img src="' + flagURL + '" class="flag">' : null;
+
+        // Find latest available dates that have data
+        let lastDate;
+        let secondToLastDate;
+        for (idx = dates.length -1; idx >= 0; idx--) {
+            if (row[dates[idx]] != null) {
+                lastDate = dates[idx];
+                secondToLastDate = dates[idx - 1];
+            }
+            else {
+                console.log(country + ' has no entry for ' + dates[idx]);
+            }
+        }
 
         // Deaths
         let deaths = row[lastDate];
