@@ -237,7 +237,7 @@ function aggregateData() {
 
 function updateHeader() {
     // Update latest data date
-    $('#latestData').html('Latest data: ' + new Date(latestDate).toLocaleDateString(
+    $('#latestData').html('Latest data from ' + new Date(latestDate).toLocaleDateString(
         "en-US", { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
     ));
 

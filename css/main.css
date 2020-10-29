@@ -8,6 +8,10 @@
   object-fit: contain;
 }
 
+.icon-zoom {
+  height: 20px;
+}
+
 .favicon {
   height: 30px;
 }
@@ -48,6 +52,13 @@
 
 .alert-container {
   top: 20px;
+}
+
+.alert-overlay {
+    position: absolute;
+    top: 20%;
+    left: 130px;
+    opacity: .7;
 }
 
 .hidden {

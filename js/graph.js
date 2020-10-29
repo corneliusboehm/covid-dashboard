@@ -415,9 +415,14 @@ function updateGraph(data,
 
 
 function adjustYScale({chart}) {
+    // Hide "Zoom me" alert
+    $('#zoomMe').fadeOut(200);
+    
+    // Get axes
     let xAxis = chart.scales['x-axis-0'];
     let yAxis = chart.scales['y-axis-0'];
-
+    
+    // Get currently visible segment on the x-axis
     let labels = chart.data.labels;
     let xMin, xMax;
     if (labels == null) {

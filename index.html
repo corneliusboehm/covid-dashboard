@@ -24,7 +24,7 @@
     </head>
 
     <body>
-        <div class="d-flex flex-column flex-md-row p-1 px-md-4 mb-4 bg-white border-bottom shadow-sm">
+        <div class="d-flex flex-column flex-md-row p-1 px-md-4 mb-3 bg-white border-bottom shadow-sm">
             <nav class="navbar navbar-light">
                 <a class="navbar-brand" href="index.html">
                     <img class="favicon mr-1" src="img/Favicon.svg"/>
@@ -47,15 +47,6 @@
         </div>
 
         <div class="container">
-            <div class="row">
-                <div class="col-sm-auto mx-auto">
-                    <div class="card bg-light">
-                        <div class="card-body text-center">
-                            <span id="latestData" class="card-text large-text">Loading data...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <div class="col-12 col-sm-6 col-xl-3 mt-3">
                     <div class="card text-white bg-danger">
@@ -224,22 +215,35 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body position-relative">
+                            <div class="alert alert-dark alert-overlay p-2" id="zoomMe" role="alert">
+                                <img class="icon-zoom" src="img/Zoom.svg"/>
+                                Zoom me
+                            </div>
                             <canvas id="graph"></canvas>
                         </div>
                         <div class="card-footer">
-                            <label id="buttonResetZoom" class="btn btn-secondary">
-                                <img class="icon" src="img/Zoom.svg"/>
-                                Reset zoom
-                            </label>
-                            <label id="buttonShare" class="btn btn-secondary">
-                                <img class="icon" src="img/Share.svg"/>
-                                Share URL
-                            </label>
-                            <label id="buttonDownloadImg" class="btn btn-secondary">
-                                <img class="icon" src="img/Download.svg"/>
-                                Download graph
-                            </label>
+                            <div class="row">
+                                <div class="col-12 col-lg-9">
+                                    <label id="buttonResetZoom" class="btn btn-secondary">
+                                        <img class="icon" src="img/ZoomHome.svg"/>
+                                        Reset zoom
+                                    </label>
+                                    <label id="buttonShare" class="btn btn-secondary">
+                                        <img class="icon" src="img/Share.svg"/>
+                                        Share URL
+                                    </label>
+                                    <label id="buttonDownloadImg" class="btn btn-secondary">
+                                        <img class="icon" src="img/Download.svg"/>
+                                        Download graph
+                                    </label>
+                                </div>
+                                <div class="col-12 col-lg-3 text-right">
+                                    <span class="badge badge-secondary" id="latestData">
+                                        Latest data from...
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
