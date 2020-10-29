@@ -132,7 +132,7 @@ function setupColumnToggles() {
 
     // Add dropdown menu for "Toggle columns"
     $(`
-<div class="btn-group" id="columnToggles">
+<div class="btn-group dropup" id="columnToggles">
     <button class="btn btn-secondary dropdown-toggle text-left" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img class="icon" src="img/Columns.svg"/>
         Toggle columns
