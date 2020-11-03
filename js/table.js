@@ -92,7 +92,7 @@ $(document).ready( function () {
                 text: '<img class="icon" src="img/Selection.svg"/> Show selected entries',
                 action: function (e, dt, node, config) {
                     table.search('').order([
-                        [columns.SELECTED, 'desc'], 
+                        [columns.SELECTED, 'desc'],
                         [columns.COUNTRY, 'asc']
                     ]).draw();
                 }
@@ -100,7 +100,7 @@ $(document).ready( function () {
         ]
     } );
     table.buttons().container().appendTo( '#countryTable_wrapper .col-md-6:eq(0)' );
-    
+
     // Make rows clickable
     $('#countryTable tbody').on( 'click', 'tr', function () {
         let selected = !($(this).hasClass('table-primary'));
@@ -116,7 +116,7 @@ $(document).ready( function () {
 
         updateSelected();
     } );
-    
+
     // Setup "Toggle columns" dropdown
     setupColumnToggles();
 } );
@@ -126,14 +126,14 @@ function setupColumnToggles() {
     // Update styling of the containing div
     $('#countryTable_wrapper .col-md-6:eq(0)').addClass('text-center');
     $('#countryTable_wrapper .col-md-6:eq(0)').addClass('text-md-left');
-    
+
     // Give the button group an ID for later reference
     $('#countryTable_wrapper .btn-group').attr('id', 'tableButtons');
 
     // Add dropdown menu for "Toggle columns"
     $(`
-<div class="btn-group dropup" id="columnToggles">
-    <button class="btn btn-secondary dropdown-toggle text-left" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<div class="btn-group dropdown" id="columnToggles">
+    <button class="btn btn-secondary dropdown-toggle text-left" type="button" id="dropdownMenuButton" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
         <img class="icon" src="img/Columns.svg"/>
         Toggle columns
     </button>
@@ -168,20 +168,20 @@ function setupColumnToggles() {
         if (['FLAG', 'COUNTRY', 'SELECTED'].includes(column)) {
             continue;
         }
-        
+
         let tableColumn = table.column(columns[column]);
         let button = $('#' + column + '_TOGGLE')
-        
+
         // Initialize buttons for active columns
         if (tableColumn.visible()) {
             button.addClass('active');
         }
-        
+
         // Change column visibility on click
         button.click( function () {
             let visibleBefore = tableColumn.visible();
             tableColumn.visible(!visibleBefore);
-            
+
             if (visibleBefore) {
                 $(this).removeClass('active');
             } else {
@@ -194,7 +194,7 @@ function setupColumnToggles() {
     $(document).on('click', '#columnToggles .dropdown-menu', function (e) {
         e.stopPropagation();
     });
-    
+
     // Make sure button group is correctly oriented
     flipButtonGroups();
 }
@@ -205,7 +205,7 @@ function updateTableData() {
 
     for (const row of data.deaths.data) {
         let country = row[COUNTRY_KEY];
-        
+
         // Population
         let pop = getPopulation(country);
         let pop100k = pop != null ? pop / 100000 : null
