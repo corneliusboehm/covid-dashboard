@@ -21,7 +21,7 @@
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.bootstrap4.min.css">
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.css">
         <link rel="stylesheet" href="css/main.css">
-        
+
         <!-- Matomo -->
         <script type="text/javascript">
             var _paq = window._paq = window._paq || [];
@@ -49,7 +49,7 @@
                 </a>
             </nav>
         </div>
-        
+
         <div class="container fixed-top alert-container">
             <div class="row">
                 <div class="col-sm-6 mx-auto text-center">
@@ -242,18 +242,18 @@
                         <div class="card-footer">
                             <div class="row">
                                 <div class="col-12 col-lg-9">
-                                    <label id="buttonResetZoom" class="btn btn-secondary">
+                                    <button type="button" id="buttonResetZoom" class="btn btn-secondary" disabled>
                                         <img class="icon" src="img/ZoomHome.svg"/>
                                         Reset zoom
-                                    </label>
-                                    <label id="buttonShare" class="btn btn-secondary">
+                                    </button>
+                                    <button type="button"  id="buttonShare" class="btn btn-secondary">
                                         <img class="icon" src="img/Share.svg"/>
                                         Share URL
-                                    </label>
-                                    <label id="buttonDownloadImg" class="btn btn-secondary">
+                                    </button>
+                                    <button type="button" id="buttonDownloadImg" class="btn btn-secondary">
                                         <img class="icon" src="img/Download.svg"/>
                                         Download graph
-                                    </label>
+                                    </button>
                                 </div>
                                 <div class="col-12 col-lg-3 text-right">
                                     <span class="badge badge-secondary" id="latestData">
@@ -295,7 +295,7 @@
                     </div>
                 </div>
              </div>
-             
+
              <footer class="mt-5 mb-4 pt-4 border-top">
                  <div class="row">
                      <div class="col-12 text-right mx-auto">

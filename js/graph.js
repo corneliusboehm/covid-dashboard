@@ -64,7 +64,7 @@ $(document).ready( function () {
                 callbacks: {
                     title: function (tooltips, data) {
                         return new Date(tooltips[0].label).toLocaleDateString(
-                            "en-US", 
+                            "en-US",
                             { year: 'numeric', month: 'short', day: 'numeric' }
                         );
                     },
@@ -151,6 +151,7 @@ $(document).ready( function () {
     // Setup "Reset Zoom" button
     $('#buttonResetZoom').click( function () {
         graph.resetZoom();
+        $('#buttonResetZoom').prop('disabled', true);
     });
 
     // Setup "Share URL" button
@@ -250,7 +251,7 @@ function createDataset(country, category, metric, relative, smoothed) {
 
     if (!(country in datasets)) {
         // Find next free color index
-        let colorIndices = Array.from(Object.values(datasets), 
+        let colorIndices = Array.from(Object.values(datasets),
                                       function(dataset) {return dataset.colorIdx});
         let numDatasets = Object.keys(datasets).length;
         if (numDatasets > 0) {
@@ -386,7 +387,7 @@ function updateGraph(data,
     if (smoothed) {
         graph.data.labels = graph.data.labels.slice(3, -3);
     }
-    
+
     // Update axis label
     let yLabel;
     if (selectedMetric === 'total') {
@@ -394,11 +395,11 @@ function updateGraph(data,
     } else {
         yLabel = 'Daily new cases';
     }
-    
+
     if (relative) {
         yLabel += ' per 100k inhabitants';
     }
-    
+
     graph.options.scales.yAxes[0].scaleLabel.labelString = yLabel;
 
     // Update pan/zoom ranges
@@ -411,17 +412,19 @@ function updateGraph(data,
 
     // Reset zoom and update graph
     graph.resetZoom();
+    $('#buttonResetZoom').prop('disabled', true);
 }
 
 
 function adjustYScale({chart}) {
-    // Hide "Zoom me" alert
+    // Hide "Zoom me" alert and enable "Reset zoom" button
     $('#zoomMe').fadeOut(200);
-    
+    $('#buttonResetZoom').prop('disabled', false);
+
     // Get axes
     let xAxis = chart.scales['x-axis-0'];
     let yAxis = chart.scales['y-axis-0'];
-    
+
     // Get currently visible segment on the x-axis
     let labels = chart.data.labels;
     let xMin, xMax;
