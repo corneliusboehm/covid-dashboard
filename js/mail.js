@@ -6,7 +6,17 @@ $('#contactForm').submit(function(e) {
         type: 'post',
         data: $('#contactForm').serialize(),
         success: function() {
-            console.log('Message sent successfully')
+            // Reset form fields
+            $('#contactForm').reset()
+
+            // Show success alert
+            $('#alertMessageSuccess').fadeIn('fast');
+            setTimeout('$("#alertMessageSuccess").fadeOut("fast")', 4000);
+        },
+        error: function() {
+            // Show error alert
+            $('#alertMessageError').fadeIn('fast');
+            setTimeout('$("#alertMessageError").fadeOut("fast")', 4000);
         }
     });
 });
