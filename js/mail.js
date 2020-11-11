@@ -7,7 +7,7 @@ $('#contactForm').submit(function(e) {
         data: $('#contactForm').serialize(),
         success: function() {
             // Reset form fields
-            $('#contactForm').reset()
+            $('#contactForm')[0].reset()
 
             // Show success alert
             $('#alertMessageSuccess').fadeIn('fast');
