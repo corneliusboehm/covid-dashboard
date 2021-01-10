@@ -16,6 +16,26 @@ const columns = {
     SELECTED: 14,
 }
 
+const constVisibleColumns = [
+    columns.FLAG,
+    columns.COUNTRY,
+]
+
+let visibleColumns = [
+    columns.CONFIRMED_TOTAL,
+    columns.DEATHS_TOTAL,
+    // columns.RECOVERED_TOTAL,
+    columns.CONFIRMED_RELATIVE,
+    // columns.DEATHS_RELATIVE,
+    // columns.RECOVERED_RELATIVE,
+    // columns.CONFIRMED_INCREASE,
+    // columns.DEATHS_INCREASE,
+    // columns.RECOVERED_INCREASE,
+    columns.CONFIRMED_INCREASE_RELATIVE,
+    // columns.DEATHS_INCREASE_RELATIVE,
+    // columns.RECOVERED_INCREASE_RELATIVE,
+]
+
 let selectedCountries = [
     WORLD_NAME,
     'Germany',
@@ -54,21 +74,7 @@ $(document).ready( function () {
                 columns.RECOVERED_INCREASE_RELATIVE,
                 columns.SELECTED,
             ]},
-            {'visible': false, 'targets': [
-                // columns.CONFIRMED_TOTAL,
-                // columns.DEATHS_TOTAL,
-                columns.RECOVERED_TOTAL,
-                // columns.CONFIRMED_RELATIVE,
-                columns.DEATHS_RELATIVE,
-                columns.RECOVERED_RELATIVE,
-                columns.CONFIRMED_INCREASE,
-                columns.DEATHS_INCREASE,
-                columns.RECOVERED_INCREASE,
-                // columns.CONFIRMED_INCREASE_RELATIVE,
-                columns.DEATHS_INCREASE_RELATIVE,
-                columns.RECOVERED_INCREASE_RELATIVE,
-                columns.SELECTED,
-            ]}
+            {'visible': false, 'targets': Object.values(columns).filter(column => !constVisibleColumns.includes(column) && !visibleColumns.includes(column))}
         ],
         aoColumns: [
             null,  // FLAG
@@ -169,7 +175,8 @@ function setupColumnToggles() {
             continue;
         }
 
-        let tableColumn = table.column(columns[column]);
+        let columnIdx = columns[column];
+        let tableColumn = table.column(columnIdx);
         let button = $('#' + column + '_TOGGLE')
 
         // Initialize buttons for active columns
@@ -184,9 +191,16 @@ function setupColumnToggles() {
 
             if (visibleBefore) {
                 $(this).removeClass('active');
+                const idx = visibleColumns.indexOf(columnIdx);
+                if (idx > -1) {
+                    visibleColumns.splice(idx, 1);
+                }
             } else {
                 $(this).addClass('active');
+                visibleColumns.push(columnIdx);
             }
+
+            updateURL();
         } );
     }
 

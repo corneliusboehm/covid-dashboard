@@ -14,6 +14,12 @@ function parseURLParams() {
         return;
     }
 
+    let paramColumns = params.get('columns');
+    if (paramColumns) {
+        visibleColumns = Array.from(decodeURIComponent(paramColumns).split(','), 
+                                    idxStr => parseInt(idxStr));
+    }
+
     let paramCountries = params.get('countries');
     if (paramCountries) {
         selectedCountries = decodeURIComponent(paramCountries).split(',');
@@ -44,6 +50,7 @@ function updateURL() {
     let currentURL = new URL(window.location.href);
     let newURLParams = new URLSearchParams();
 
+    newURLParams.append('columns', visibleColumns.join(','));
     newURLParams.append('countries', selectedCountries.join(','));
     newURLParams.append('data', selectedCategories.join(','));
     newURLParams.append('metric', selectedMetric);
