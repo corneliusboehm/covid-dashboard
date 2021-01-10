@@ -16,7 +16,7 @@ $(document).ready( function () {
 
         updateSelected();
     } );
-    
+
     $('#buttonQuickActive').click( function () {
         selectedCategories = ['active'];
         selectedMetric = 'total';
@@ -26,7 +26,7 @@ $(document).ready( function () {
 
         updateSelected();
     } );
-    
+
     $('#buttonQuickTotals').click( function () {
         selectedCategories = ['confirmed', 'deaths'];
         selectedMetric = 'total';
@@ -36,8 +36,18 @@ $(document).ready( function () {
 
         updateSelected();
     } );
-    
-    
+
+    $('#buttonQuickFatalityRate').click( function () {
+        selectedCategories = ['fatality rate'];
+        selectedMetric = 'change';
+        relative = false;
+        logScale = false;
+        smoothed = true;
+
+        updateSelected();
+    } );
+
+
     // Category buttons
     $('#buttonConfirmed').click( function () {
         updateCategories('confirmed', $(this).prop('checked'));
@@ -56,6 +66,15 @@ $(document).ready( function () {
 
     $('#buttonActive').click( function () {
         updateCategories('active', $(this).prop('checked'));
+        updateSelected();
+    } );
+
+    $('#buttonFatalityRate').click( function () {
+        if ($(this).prop('checked')) {
+            selectedCategories = ['fatality rate'];
+        } else {
+            selectedCategories = [];
+        }
         updateSelected();
     } );
 
@@ -105,7 +124,7 @@ $(window).on('resize', function() {
 function flipButtonGroups() {
     let width = $(window).width();
 
-    if (width > 755) {
+    if (width > 979) {
         $('#quickControls').removeClass('btn-group-vertical');
         $('#quickControls').addClass('btn-group');
     } else {
@@ -113,7 +132,7 @@ function flipButtonGroups() {
         $('#quickControls').addClass('btn-group-vertical');
     }
 
-    if (width > 755) {
+    if (width > 979) {
         $('#dataButtonGroup').removeClass('btn-group-vertical');
         $('#dataButtonGroup').addClass('btn-group');
     } else {
@@ -164,12 +183,18 @@ function updateButtons() {
                        && !logScale
                        && !smoothed);
     setButtonState('QuickTotals', quickTotals);
+    let quickFatalityRate = (arrayEqual(selectedCategories, ['fatality rate'])
+                             && selectedMetric === 'change'
+                             && !logScale
+                             && smoothed);
+    setButtonState('QuickFatalityRate', quickFatalityRate);
     
     // Category buttons
     setButtonState('Confirmed', selectedCategories.includes('confirmed'));
     setButtonState('Deaths', selectedCategories.includes('deaths'));
     setButtonState('Recovered', selectedCategories.includes('recovered'));
     setButtonState('Active', selectedCategories.includes('active'));
+    setButtonState('FatalityRate', selectedCategories.includes('fatality rate'));
 
     // Total vs change radio buttons
     setButtonState('Total', selectedMetric === 'total');
@@ -187,6 +212,7 @@ function updateButtons() {
 
 
 function updateCategories(category, selected) {
+    selectedCategories = selectedCategories.filter(cat => cat !== 'fatality rate');
     if (selected) {
         selectedCategories.push(category);
     } else {

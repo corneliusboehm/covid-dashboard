@@ -288,34 +288,49 @@ function findCountryData(country, category) {
 }
 
 
+function computeDailyChange(dataArray) {
+    let dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
+    dataArrayBefore.unshift(0);
+    return arraySub(dataArray, dataArrayBefore);
+}
+
+
 function getCountryData(country, category, metric, relative, smoothed) {
-    let dataCountry = findCountryData(country, category);
-
-    if (!dataCountry) {
-        console.log('Data not found: ', country, category)
-        return null;
-    }
-
-    let dataArray = Array.from(data[category].dates, date => dataCountry[date]);
-    let dataArrayBefore;
     let output;
+    if (category === 'fatality rate') {
+        let deathData = findCountryData(country, 'deaths');
+        let confirmedData = findCountryData(country, 'confirmed');
 
-    switch (metric) {
-        case 'total':
-            output = dataArray;
-            break;
-
-        case 'change':
-            dataArrayBefore = dataArray.slice(0, dataArray.length - 1);
-            dataArrayBefore.unshift(0);
-            output = arraySub(dataArray, dataArrayBefore);
-            break;
-
-        default:
+        if (!deathData || !confirmedData) {
+            console.log('Data not found: ', country, category)
             return null;
+        }
+
+        deathDataArray = Array.from(data['deaths'].dates, date => deathData[date]);
+        confirmedDataArray = Array.from(data['confirmed'].dates, date => confirmedData[date]);
+
+        if (metric === 'change') {
+            deathDataArray = computeDailyChange(deathDataArray);
+            confirmedDataArray = computeDailyChange(confirmedDataArray);
+        }
+
+        output = arrayDiv(deathDataArray, confirmedDataArray);
+    } else {
+        let dataCountry = findCountryData(country, category);
+
+        if (!dataCountry) {
+            console.log('Data not found: ', country, category)
+            return null;
+        }
+
+        output = Array.from(data['deaths'].dates, date => dataCountry[date]);
     }
 
-    if (relative) {
+    if (metric === 'change' && category !== 'fatality rate') {
+        output = computeDailyChange(output);
+    }
+
+    if (relative && category !== 'fatality rate') {
         let pop = getPopulation(country);
         if (pop == null) {
             return null;

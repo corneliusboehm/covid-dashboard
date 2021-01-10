@@ -138,6 +138,13 @@
                                         <img class="icon" src="img/Sum.svg"/>
                                         Total confirmed and deaths
                                     </label>
+                                    <label class="btn btn-secondary text-left" id="labelQuickFatalityRate"
+                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                        title="Show daily rate of death vs confirmed cases">
+                                        <input type="radio" name="quickControl" id="buttonQuickFatalityRate">
+                                        <img class="icon" src="img/Percentage.svg"/>
+                                        Daily fatality rate
+                                    </label>
                                 </div>
                             </div>
                             <div class="btn-group" data-toggle="buttons-checkbox">
@@ -148,9 +155,9 @@
                             </div>
                             <div class="collapse" id="advancedControls">
                                 <div class="card card-body">
-                                    <div class="btn-toolbar mb-2" role="toolbar">
+                                    <div class="btn-toolbar" role="toolbar">
                                         <div class="col-sm-1 control-title text-sm-right">Data</div>
-                                        <div class="btn-group btn-group-toggle mr-2" id="dataButtonGroup" role="group" data-toggle="buttons">
+                                        <div class="btn-group btn-group-toggle mb-2 mr-2" id="dataButtonGroup" role="group" data-toggle="buttons">
                                             <label class="btn btn-secondary text-left" id="labelConfirmed"
                                                 data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                                 title="Show confirmed cases">
@@ -180,6 +187,15 @@
                                                 Active
                                             </label>
                                         </div>
+                                        <div class="btn-group-toggle mb-2" role="group" data-toggle="buttons">
+                                            <label class="btn btn-secondary text-left" id="labelFatalityRate"
+                                                data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
+                                                title="Show rate of death vs confirmed cases">
+                                                <input type="checkbox" id="buttonFatalityRate">
+                                                <img class="icon" src="img/Percentage.svg"/>
+                                                Fatality Rate
+                                            </label>
+                                        </div>
                                     </div>
                                     <div class="btn-toolbar" role="toolbar">
                                         <div class="col-sm-1 control-title mb-sm-2 text-sm-right">Metric</div>
@@ -204,7 +220,7 @@
                                                 data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
                                                 title="Show number of cases in a country per 100k inhabitants">
                                                 <input type="checkbox" id="buttonRelative">
-                                                <img class="icon" src="img/Average.svg"/>
+                                                <img class="icon" src="img/Person.svg"/>
                                                 Per 100k
                                             </label>
                                         </div>
