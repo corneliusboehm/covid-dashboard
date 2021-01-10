@@ -200,9 +200,32 @@ function setupColumnToggles() {
 }
 
 
-function updateTableData() {
-    let dates = data.deaths.dates;
+function getCountryTableData(country, category, pop100k) {
+    let row = getCountryData(country, category, 'total', false, false);
+    let total = 0;
+    let increase = 0;
+    let totalRelative = 0;
+    let increaseRelative = 0;
+    if (row != null) {
+        total = row[row.length - 1];
+        increase = total - row[row.length - 2];
 
+        if (pop100k != null) {
+            totalRelative = Math.round(total / pop100k);
+            increaseRelative = Math.round(increase * 10 / pop100k) / 10;
+        }
+    }
+    
+    return {
+        total: total,
+        increase: increase,
+        totalRelative: totalRelative,
+        increaseRelative: increaseRelative
+    };
+}
+
+
+function updateTableData() {
     for (const row of data.deaths.data) {
         let country = row[COUNTRY_KEY];
 
@@ -214,79 +237,31 @@ function updateTableData() {
         let flagURL = getFlag(country);
         let flag = flagURL != null ? '<img src="' + flagURL + '" class="flag">' : null;
 
-        // Find latest available dates that have data
-        let lastDate;
-        let secondToLastDate;
-        for (idx = dates.length -1; idx >= 0; idx--) {
-            if (row[dates[idx]] != null) {
-                lastDate = dates[idx];
-                secondToLastDate = dates[idx - 1];
-            }
-            else {
-                console.log(country + ' has no entry for ' + dates[idx]);
-            }
-        }
-
         // Deaths
-        let deaths = row[lastDate];
-        let deathsIncrease = deaths - row[secondToLastDate];
-        let deathsRelative = 0;
-        let deathsIncreaseRelative = 0;
-        if (pop100k != null) {
-            deathsRelative = Math.round(deaths / pop100k);
-            deathsIncreaseRelative = Math.round(deathsIncrease / pop100k);
-        }
+        deathData = getCountryTableData(country, 'deaths', pop100k);
 
         // Confirmed
-        let confirmedRow = getCountryData(country, 'confirmed', 'total', false, false);
-        let confirmed = 0;
-        let confirmedIncrease = 0;
-        let confirmedRelative = 0;
-        let confirmedIncreaseRelative = 0;
-        if (confirmedRow != null) {
-            confirmed = confirmedRow[confirmedRow.length - 1];
-            confirmedIncrease = confirmed - confirmedRow[confirmedRow.length - 2];
-
-            if (pop100k != null) {
-                confirmedRelative = Math.round(confirmed / pop100k);
-                confirmedIncreaseRelative = Math.round(confirmedIncrease / pop100k);
-            }
-        }
+        confirmedData = getCountryTableData(country, 'confirmed', pop100k);
 
         // Recovered
-        let recoveredRow = getCountryData(country, 'recovered', 'total', false, false);
-        let recovered = 0;
-        let recoveredIncrease = 0;
-        let recoveredRelative = 0;
-        let recoveredIncreaseRelative = 0;
-        if (recoveredRow != null) {
-            recovered = recoveredRow[recoveredRow.length - 1];
-            recoveredIncrease = recovered - recoveredRow[recoveredRow.length - 2];
-
-            if (pop100k != null) {
-                recoveredRelative = Math.round(recovered / pop100k);
-                recoveredIncreaseRelative = Math.round(recoveredIncrease / pop100k);
-            }
-        } else {
-            recovered = 0;
-        }
+        recoveredData = getCountryTableData(country, 'recovered', pop100k);
 
         // Add row
         rowNode = table.row.add([
             flag,
             country,
-            confirmed.toLocaleString('en-US'),
-            deaths.toLocaleString('en-US'),
-            recovered.toLocaleString('en-US'),
-            confirmedRelative.toLocaleString('en-US'),
-            deathsRelative.toLocaleString('en-US'),
-            recoveredRelative.toLocaleString('en-US'),
-            confirmedIncrease.toLocaleString('en-US'),
-            deathsIncrease.toLocaleString('en-US'),
-            recoveredIncrease.toLocaleString('en-US'),
-            confirmedIncreaseRelative.toLocaleString('en-US'),
-            deathsIncreaseRelative.toLocaleString('en-US'),
-            recoveredIncreaseRelative.toLocaleString('en-US'),
+            confirmedData.total.toLocaleString('en-US'),
+            deathData.total.toLocaleString('en-US'),
+            recoveredData.total.toLocaleString('en-US'),
+            confirmedData.totalRelative.toLocaleString('en-US'),
+            deathData.totalRelative.toLocaleString('en-US'),
+            recoveredData.totalRelative.toLocaleString('en-US'),
+            confirmedData.increase.toLocaleString('en-US'),
+            deathData.increase.toLocaleString('en-US'),
+            recoveredData.increase.toLocaleString('en-US'),
+            confirmedData.increaseRelative.toLocaleString('en-US'),
+            deathData.increaseRelative.toLocaleString('en-US'),
+            recoveredData.increaseRelative.toLocaleString('en-US'),
             0
         ]).node();
     }
