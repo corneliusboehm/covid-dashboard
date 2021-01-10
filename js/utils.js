@@ -13,7 +13,11 @@ function arrayDiv(a, b) {
 
     for (idx = 0; idx < a.length; idx++) {
         div = isNumber ? b : b[idx];
-        out.push(a[idx] / div);
+        if (div == 0) {
+            out.push(0);
+        } else {
+            out.push(a[idx] / div);
+        }
     }
 
     return out;
