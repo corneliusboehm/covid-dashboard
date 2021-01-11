@@ -10,7 +10,8 @@ function parseURLParams() {
     let params = url.searchParams;
     
     if (Array.from(params).length == 0) {
-        // Use default parameters
+        // Use parameters from local storage if available, otherwise default parameters
+        loadLocalStorage();
         return;
     }
 
@@ -46,6 +47,21 @@ function parseURLParams() {
 }
 
 
+function loadLocalStorage() {
+    storage = window.localStorage;
+
+    if (storage.getItem('metric')) {
+        visibleColumns = JSON.parse(storage.getItem('columns'));
+        selectedCountries = JSON.parse(storage.getItem('countries'));
+        selectedCategories = JSON.parse(storage.getItem('data'));
+        selectedMetric = storage.getItem('metric');
+        relative = JSON.parse(storage.getItem('relative'));
+        logScale = JSON.parse(storage.getItem('logscale'));
+        smoothed = JSON.parse(storage.getItem('smoothed'));
+    }
+}
+
+
 function updateURL() {
     let currentURL = new URL(window.location.href);
     let newURLParams = new URLSearchParams();
@@ -70,4 +86,19 @@ function updateURL() {
     if (newURLParams.toString() !== currentURL.search) {
         window.history.replaceState(null, '', currentURL.pathname + '?' + newURLParams.toString());
     }
+
+    updateLocalStorage();
+}
+
+
+function updateLocalStorage() {
+    storage = window.localStorage;
+
+    storage.setItem('columns', JSON.stringify(visibleColumns));
+    storage.setItem('countries', JSON.stringify(selectedCountries));
+    storage.setItem('data', JSON.stringify(selectedCategories));
+    storage.setItem('metric', selectedMetric);
+    storage.setItem('relative', JSON.stringify(relative));
+    storage.setItem('logscale', JSON.stringify(logScale));
+    storage.setItem('smoothed', JSON.stringify(smoothed));
 }
