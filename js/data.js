@@ -1,6 +1,6 @@
 const BASE_DATA_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/' + 
                       'csse_covid_19_data/csse_covid_19_time_series/';
-const REST_COUNTRIES_URL = 'https://restcountries.eu/rest/v2/all?fields=name;population;flag'
+const REST_COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,population,flags'
 const FIRST_DATE = '1/22/20';
 let latestDate = null;
 const INPUT_CATEGORIES = ['deaths', 'confirmed', 'recovered'];
@@ -21,52 +21,53 @@ let data = {
 let population;
 
 let populationNameDict = {
-    'Bolivia': 'Bolivia (Plurinational State of)',
-    'British Virgin Islands': 'Virgin Islands (British)',
-    'Brunei': 'Brunei Darussalam',
+    'Bonaire, Sint Eustatius and Saba': 'Caribbean Netherlands',
     'Burma': 'Myanmar',
-    'Congo (Brazzaville)': 'Congo',
-    'Congo (Kinshasa)': 'Congo (Democratic Republic of the)',
-    'Cote d\'Ivoire': 'Côte d\'Ivoire',
+    'Cabo Verde': 'Cape Verde',
+    'Congo (Brazzaville)': 'Republic of the Congo',
+    'Congo (Kinshasa)': 'DR Congo',
+    'Cote d\'Ivoire': 'Ivory Coast',
     'Curacao': 'Curaçao',
-    'Czechia': 'Czech Republic',
-    'Eswatini': 'Swaziland',
-    'Iran': 'Iran (Islamic Republic of)',
-    'Korea, South': 'Korea (Republic of)',
-    'Kosovo': 'Republic of Kosovo',
-    'Laos': 'Lao People\'s Democratic Republic',
-    'Moldova': 'Moldova (Republic of)',
-    'North Macedonia': 'Macedonia (the former Yugoslav Republic of)',
+    'Falkland Islands (Malvinas)': 'Falkland Islands',
+    'Holy See': 'Vatican City',
+    'Korea, South': 'South Korea',
     'Reunion': 'Réunion',
-    'Russia': 'Russian Federation',
     'Saint Barthelemy': 'Saint Barthélemy',
-    'Sint Maarten': 'Sint Maarten (Dutch part)',
-    'St Martin': 'Saint Martin (French part)',
-    'Syria': 'Syrian Arab Republic',
+    'Sao Tome and Principe': 'São Tomé and Príncipe',
+    'St Martin': 'Saint Martin',
     'Taiwan*': 'Taiwan',
-    'Tanzania': 'Tanzania, United Republic of',
-    'United Kingdom': 'United Kingdom of Great Britain and Northern Ireland',
-    'US': 'United States of America',
-    'Venezuela': 'Venezuela (Bolivarian Republic of)',
-    'Vietnam': 'Viet Nam',
-    'West Bank and Gaza': 'Palestine, State of'
+    'US': 'United States',
+    'West Bank and Gaza': 'Palestine'
 }
 
 let missingPopulations = {
     'Channel Islands': {
         // Source: https://en.wikipedia.org/wiki/Channel_Islands
         population: 170499,
-        flag: null,
+        flags: {
+            png: null,
+        },
     },
     'Diamond Princess': {
         // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
         population: 3711,
-        flag: null,
+        flags: {
+            png: null,
+        },
     },
     'MS Zaandam': {
         // Source: https://en.wikipedia.org/wiki/COVID-19_pandemic_on_cruise_ships
         population: 1829,
-        flag: null,
+        flags: {
+            png: null,
+        },
+    },
+    'Summer Olympics 2020': {
+        // Source: https://en.wikipedia.org/wiki/2020_Summer_Olympics
+        population: 300000,
+        flags: {
+            png: null,
+        },
     }
 }
 
@@ -206,9 +207,13 @@ function aggregateData() {
         globalPopulation += entry.population
     }
     population.push({
-        name: WORLD_NAME,
+        name: {
+            common: WORLD_NAME,
+        },
         population: globalPopulation,
-        flag: 'img/Globe.png',  // Source: http://www.pngplay.com/image/11497
+        flags: {
+            png: 'img/Globe.png',  // Source: http://www.pngplay.com/image/11497
+        },
     });
 
     // Aggregate global data
@@ -258,7 +263,7 @@ function getRestCountriesEntry(country) {
     // Map names to population data naming
     let popName = country in populationNameDict ? populationNameDict[country] : country;
 
-    let pop = population.find(entry => entry.name === popName);
+    let pop = population.find(entry => entry.name.common === popName);
 
     if (pop != null) {
         return pop;
@@ -279,7 +284,7 @@ function getPopulation(country) {
 
 function getFlag(country) {
     pop = getRestCountriesEntry(country);
-    return pop != null ? pop.flag : null;
+    return pop != null ? pop.flags.png : null;
 }
 
 
