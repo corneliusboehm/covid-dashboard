@@ -3,17 +3,13 @@ const columns = {
     COUNTRY: 1,
     CONFIRMED_TOTAL: 2,
     DEATHS_TOTAL: 3,
-    RECOVERED_TOTAL: 4,
-    CONFIRMED_RELATIVE: 5,
-    DEATHS_RELATIVE: 6,
-    RECOVERED_RELATIVE: 7,
-    CONFIRMED_INCREASE: 8,
-    DEATHS_INCREASE: 9,
-    RECOVERED_INCREASE: 10,
-    CONFIRMED_INCREASE_RELATIVE: 11,
-    DEATHS_INCREASE_RELATIVE: 12,
-    RECOVERED_INCREASE_RELATIVE: 13,
-    SELECTED: 14,
+    CONFIRMED_RELATIVE: 4,
+    DEATHS_RELATIVE: 5,
+    CONFIRMED_INCREASE: 6,
+    DEATHS_INCREASE: 7,
+    CONFIRMED_INCREASE_RELATIVE: 8,
+    DEATHS_INCREASE_RELATIVE: 9,
+    SELECTED: 10,
 }
 
 const constVisibleColumns = [
@@ -24,16 +20,12 @@ const constVisibleColumns = [
 let visibleColumns = [
     columns.CONFIRMED_TOTAL,
     columns.DEATHS_TOTAL,
-    // columns.RECOVERED_TOTAL,
     columns.CONFIRMED_RELATIVE,
     // columns.DEATHS_RELATIVE,
-    // columns.RECOVERED_RELATIVE,
     // columns.CONFIRMED_INCREASE,
     // columns.DEATHS_INCREASE,
-    // columns.RECOVERED_INCREASE,
     columns.CONFIRMED_INCREASE_RELATIVE,
     // columns.DEATHS_INCREASE_RELATIVE,
-    // columns.RECOVERED_INCREASE_RELATIVE,
 ]
 
 let selectedCountries = [
@@ -62,16 +54,12 @@ $(document).ready( function () {
                 columns.FLAG,
                 columns.CONFIRMED_TOTAL,
                 columns.DEATHS_TOTAL,
-                columns.RECOVERED_TOTAL,
                 columns.CONFIRMED_RELATIVE,
                 columns.DEATHS_RELATIVE,
-                columns.RECOVERED_RELATIVE,
                 columns.CONFIRMED_INCREASE,
                 columns.DEATHS_INCREASE,
-                columns.RECOVERED_INCREASE,
                 columns.CONFIRMED_INCREASE_RELATIVE,
                 columns.DEATHS_INCREASE_RELATIVE,
-                columns.RECOVERED_INCREASE_RELATIVE,
                 columns.SELECTED,
             ]},
             {'visible': false, 'targets': Object.values(columns).filter(column => !constVisibleColumns.includes(column) && !visibleColumns.includes(column))}
@@ -81,16 +69,12 @@ $(document).ready( function () {
             null,  // COUNTRY
             {orderSequence: ['desc', 'asc']},  // CONFIRMED_TOTAL
             {orderSequence: ['desc', 'asc']},  // DEATHS_TOTAL
-            {orderSequence: ['desc', 'asc']},  // RECOVERED_TOTAL
             {orderSequence: ['desc', 'asc']},  // CONFIRMED_RELATIVE
             {orderSequence: ['desc', 'asc']},  // DEATHS_RELATIVE
-            {orderSequence: ['desc', 'asc']},  // RECOVERED_RELATIVE
             {orderSequence: ['desc', 'asc']},  // CONFIRMED_INCREASE
             {orderSequence: ['desc', 'asc']},  // DEATHS_INCREASE
-            {orderSequence: ['desc', 'asc']},  // RECOVERED_INCREASE
             {orderSequence: ['desc', 'asc']},  // CONFIRMED_INCREASE_RELATIVE
             {orderSequence: ['desc', 'asc']},  // DEATHS_INCREASE_RELATIVE
-            {orderSequence: ['desc', 'asc']},  // RECOVERED_INCREASE_RELATIVE
             null,  // SELECTED
         ],
         buttons: [
@@ -147,25 +131,21 @@ function setupColumnToggles() {
         <h6 class="dropdown-header">Total cases</h6>
         <button class="dropdown-item" id="CONFIRMED_TOTAL_TOGGLE" type="button">Confirmed</button>
         <button class="dropdown-item" id="DEATHS_TOTAL_TOGGLE" type="button">Deaths</button>
-        <button class="dropdown-item" id="RECOVERED_TOTAL_TOGGLE" type="button">Recovered</button>
         <div class="dropdown-divider"></div>
 
         <h6 class="dropdown-header">Per 100k</h6>
         <button class="dropdown-item" id="CONFIRMED_RELATIVE_TOGGLE" type="button">Confirmed</button>
         <button class="dropdown-item" id="DEATHS_RELATIVE_TOGGLE" type="button">Deaths</button>
-        <button class="dropdown-item" id="RECOVERED_RELATIVE_TOGGLE" type="button">Recovered</button>
         <div class="dropdown-divider"></div>
 
         <h6 class="dropdown-header">New cases</h6>
         <button class="dropdown-item" id="CONFIRMED_INCREASE_TOGGLE" type="button">Confirmed</button>
         <button class="dropdown-item" id="DEATHS_INCREASE_TOGGLE" type="button">Deaths</button>
-        <button class="dropdown-item" id="RECOVERED_INCREASE_TOGGLE" type="button">Recovered</button>
         <div class="dropdown-divider"></div>
 
         <h6 class="dropdown-header">New cases per 100k</h6>
         <button class="dropdown-item" id="CONFIRMED_INCREASE_RELATIVE_TOGGLE" type="button">Confirmed</button>
         <button class="dropdown-item" id="DEATHS_INCREASE_RELATIVE_TOGGLE" type="button">Deaths</button>
-        <button class="dropdown-item" id="RECOVERED_INCREASE_RELATIVE_TOGGLE" type="button">Recovered</button>
     </div>
 </div>`).appendTo('#tableButtons');
 
@@ -257,25 +237,18 @@ function updateTableData() {
         // Confirmed
         confirmedData = getCountryTableData(country, 'confirmed', pop100k);
 
-        // Recovered
-        recoveredData = getCountryTableData(country, 'recovered', pop100k);
-
         // Add row
         rowNode = table.row.add([
             flag,
             country,
             confirmedData.total.toLocaleString('en-US'),
             deathData.total.toLocaleString('en-US'),
-            recoveredData.total.toLocaleString('en-US'),
             confirmedData.totalRelative.toLocaleString('en-US'),
             deathData.totalRelative.toLocaleString('en-US'),
-            recoveredData.totalRelative.toLocaleString('en-US'),
             confirmedData.increase.toLocaleString('en-US'),
             deathData.increase.toLocaleString('en-US'),
-            recoveredData.increase.toLocaleString('en-US'),
             confirmedData.increaseRelative.toLocaleString('en-US'),
             deathData.increaseRelative.toLocaleString('en-US'),
-            recoveredData.increaseRelative.toLocaleString('en-US'),
             0
         ]).node();
     }

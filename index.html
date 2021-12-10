@@ -66,7 +66,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-12 col-sm-6 col-xl-3 mt-3">
+                <div class="col-12 col-sm-6 mt-3">
                     <div class="card text-white bg-danger">
                         <div class="card-header">
                             Global Confirmed
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-sm-6 col-xl-3 mt-3">
+                <div class="col-12 col-sm-6 mt-3">
                     <div class="card text-white bg-secondary">
                         <div class="card-header">
                             Global Deaths
@@ -85,28 +85,6 @@
                         <div class="card-body text-center">
                             <h3 id="deathsGlobal" class="card-text"></h3>
                             <h5 id="deathsGlobalIncrease" class="card-text"></h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3 mt-3">
-                    <div class="card text-white bg-success">
-                        <div class="card-header">
-                            Global Recovered
-                        </div>
-                        <div class="card-body text-center">
-                            <h3 id="recoveredGlobal" class="card-text"></h3>
-                            <h5 id="recoveredGlobalIncrease" class="card-text"></h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3 mt-3">
-                    <div class="card text-white bg-info">
-                        <div class="card-header">
-                            Global Active
-                        </div>
-                        <div class="card-body text-center">
-                            <h3 id="activeGlobal" class="card-text"></h3>
-                            <h5 id="activeGlobalIncrease" class="card-text"></h5>
                         </div>
                     </div>
                 </div>
@@ -123,13 +101,6 @@
                                         <input type="radio" name="quickControl" id="buttonQuickNewConfirmed">
                                         <img class="icon" src="img/Virus.svg"/>
                                         New confirmed cases
-                                    </label>
-                                    <label class="btn btn-secondary text-left" id="labelQuickActive"
-                                        data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                        title="Show number of active cases, averaged over 100k inhabitants">
-                                        <input type="radio" name="quickControl" id="buttonQuickActive">
-                                        <img class="icon" src="img/Fever.svg"/>
-                                        Active cases
                                     </label>
                                     <label class="btn btn-secondary text-left" id="labelQuickTotals"
                                         data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
@@ -164,20 +135,6 @@
                                                 <input type="checkbox" id="buttonDeaths">
                                                 <img class="icon" src="img/Death.svg"/>
                                                 Deaths
-                                            </label>
-                                            <label class="btn btn-secondary text-left" id="labelRecovered"
-                                                data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                                title="Show recovered cases">
-                                                <input type="checkbox" id="buttonRecovered">
-                                                <img class="icon" src="img/Health.svg"/>
-                                                Recovered
-                                            </label>
-                                            <label class="btn btn-secondary text-left" id="labelActive"
-                                                data-toggle="tooltip" data-placement="bottom" data-trigger="hover"
-                                                title="Show active cases">
-                                                <input type="checkbox" id="buttonActive">
-                                                <img class="icon" src="img/Fever.svg"/>
-                                                Active
                                             </label>
                                         </div>
                                     </div>
@@ -277,16 +234,12 @@
                                         <th>Country</th>
                                         <th>Confirmed</th>
                                         <th>Deaths</th>
-                                        <th>Recovered</th>
                                         <th>Confirmed (per 100k)</th>
                                         <th>Deaths (per 100k)</th>
-                                        <th>Recovered (per 100k)</th>
                                         <th>New Confirmed</th>
                                         <th>New Deaths</th>
-                                        <th>New Recovered</th>
                                         <th>New Confirmed (per 100k)</th>
                                         <th>New Deaths (per 100k)</th>
-                                        <th>New Recovered (per 100k)</th>
                                         <th>Selected</th>
                                     </tr>
                                 </thead>

@@ -17,16 +17,6 @@ $(document).ready( function () {
         updateSelected();
     } );
 
-    $('#buttonQuickActive').click( function () {
-        selectedCategories = ['active'];
-        selectedMetric = 'total';
-        relative = true;
-        logScale = false;
-        smoothed = false;
-
-        updateSelected();
-    } );
-
     $('#buttonQuickTotals').click( function () {
         selectedCategories = ['confirmed', 'deaths'];
         selectedMetric = 'total';
@@ -46,16 +36,6 @@ $(document).ready( function () {
 
     $('#buttonDeaths').click( function () {
         updateCategories('deaths', $(this).prop('checked'));
-        updateSelected();
-    } );
-
-    $('#buttonRecovered').click( function () {
-        updateCategories('recovered', $(this).prop('checked'));
-        updateSelected();
-    } );
-
-    $('#buttonActive').click( function () {
-        updateCategories('active', $(this).prop('checked'));
         updateSelected();
     } );
 
@@ -151,12 +131,6 @@ function updateButtons() {
                           && !logScale
                           && smoothed);
     setButtonState('QuickNewConfirmed', quickConfirmed);
-    let quickActive = (arrayEqual(selectedCategories, ['active'])
-                       && selectedMetric === 'total'
-                       && relative
-                       && !logScale
-                       && !smoothed);
-    setButtonState('QuickActive', quickActive);
     let quickTotals = ((arrayEqual(selectedCategories, ['confirmed', 'deaths'])
                         || arrayEqual(selectedCategories, ['deaths', 'confirmed']))
                        && selectedMetric === 'total'
@@ -168,8 +142,6 @@ function updateButtons() {
     // Category buttons
     setButtonState('Confirmed', selectedCategories.includes('confirmed'));
     setButtonState('Deaths', selectedCategories.includes('deaths'));
-    setButtonState('Recovered', selectedCategories.includes('recovered'));
-    setButtonState('Active', selectedCategories.includes('active'));
 
     // Total vs change radio buttons
     setButtonState('Total', selectedMetric === 'total');

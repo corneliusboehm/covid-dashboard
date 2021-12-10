@@ -3,8 +3,8 @@ const BASE_DATA_URL = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19
 const REST_COUNTRIES_URL = 'https://restcountries.com/v3.1/all?fields=name,population,flags'
 const FIRST_DATE = '1/22/20';
 let latestDate = null;
-const INPUT_CATEGORIES = ['deaths', 'confirmed', 'recovered'];
-const CATEGORIES = ['deaths', 'confirmed', 'recovered', 'active'];
+const INPUT_CATEGORIES = ['deaths', 'confirmed'];
+const CATEGORIES = ['deaths', 'confirmed'];
 const COUNTRY_KEY = 'Country/Region';
 const PROVINCE_KEY = 'Province/State';
 const WORLD_NAME = 'World';
@@ -15,8 +15,6 @@ let data = {
     // Categories added later:
     // deaths
     // confirmed
-    // recovered
-    // active
 };
 let population;
 
@@ -169,37 +167,6 @@ function aggregateData() {
     // Get latest date
     numDates = dates.length
     latestDate = dates[numDates - 1];
-
-    // Calculate active cases from other categories
-    data['active'] = {
-        data: [],
-        keys: keys,
-        dates: dates
-    }
-
-    for (const deathRow of data.deaths.data) {
-        const country = deathRow[COUNTRY_KEY];
-        let confirmedRow = findCountryData(country, 'confirmed');
-        let recoveredRow = findCountryData(country, 'recovered');
-
-        if (!confirmedRow || !recoveredRow) {
-            continue;
-        }
-
-        let activeRow = {};
-
-        // Insert fixed keys
-        for (const key of keys) {
-            activeRow[key] = deathRow[key];
-        }
-
-        // Insert active case numbers
-        for (const date of dates) {
-            activeRow[date] = confirmedRow[date] - deathRow[date] - recoveredRow[date];
-        }
-
-        data.active.data.push(activeRow);
-    }
 
     // Compute global population
     let globalPopulation = 0;
