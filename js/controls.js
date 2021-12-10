@@ -37,16 +37,6 @@ $(document).ready( function () {
         updateSelected();
     } );
 
-    $('#buttonQuickFatalityRate').click( function () {
-        selectedCategories = ['fatality rate'];
-        selectedMetric = 'change';
-        relative = false;
-        logScale = false;
-        smoothed = true;
-
-        updateSelected();
-    } );
-
 
     // Category buttons
     $('#buttonConfirmed').click( function () {
@@ -66,15 +56,6 @@ $(document).ready( function () {
 
     $('#buttonActive').click( function () {
         updateCategories('active', $(this).prop('checked'));
-        updateSelected();
-    } );
-
-    $('#buttonFatalityRate').click( function () {
-        if ($(this).prop('checked')) {
-            selectedCategories = ['fatality rate'];
-        } else {
-            selectedCategories = [];
-        }
         updateSelected();
     } );
 
@@ -183,18 +164,12 @@ function updateButtons() {
                        && !logScale
                        && !smoothed);
     setButtonState('QuickTotals', quickTotals);
-    let quickFatalityRate = (arrayEqual(selectedCategories, ['fatality rate'])
-                             && selectedMetric === 'change'
-                             && !logScale
-                             && smoothed);
-    setButtonState('QuickFatalityRate', quickFatalityRate);
     
     // Category buttons
     setButtonState('Confirmed', selectedCategories.includes('confirmed'));
     setButtonState('Deaths', selectedCategories.includes('deaths'));
     setButtonState('Recovered', selectedCategories.includes('recovered'));
     setButtonState('Active', selectedCategories.includes('active'));
-    setButtonState('FatalityRate', selectedCategories.includes('fatality rate'));
 
     // Total vs change radio buttons
     setButtonState('Total', selectedMetric === 'total');
@@ -212,7 +187,6 @@ function updateButtons() {
 
 
 function updateCategories(category, selected) {
-    selectedCategories = selectedCategories.filter(cat => cat !== 'fatality rate');
     if (selected) {
         selectedCategories.push(category);
     } else {

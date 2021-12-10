@@ -390,22 +390,14 @@ function updateGraph(data,
 
     // Update axis label
     let yLabel;
-    if (arrayEqual(selectedCategories, ['fatality rate'])) {
-        if (selectedMetric === 'total') {
-            yLabel = 'Total death cases / confirmed cases'
-        } else {
-            yLabel = 'Daily death cases / confirmed cases'
-        }
+    if (selectedMetric === 'total') {
+        yLabel = 'Total number of cases';
     } else {
-        if (selectedMetric === 'total') {
-            yLabel = 'Total number of cases';
-        } else {
-            yLabel = 'Daily new cases';
-        }
+        yLabel = 'Daily new cases';
+    }
 
-        if (relative) {
-            yLabel += ' per 100k inhabitants';
-        }
+    if (relative) {
+        yLabel += ' per 100k inhabitants';
     }
     
     if (smoothed) {

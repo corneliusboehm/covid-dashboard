@@ -301,41 +301,20 @@ function computeDailyChange(dataArray) {
 
 
 function getCountryData(country, category, metric, relative, smoothed) {
-    let output;
-    if (category === 'fatality rate') {
-        let deathData = findCountryData(country, 'deaths');
-        let confirmedData = findCountryData(country, 'confirmed');
+    let dataCountry = findCountryData(country, category);
 
-        if (!deathData || !confirmedData) {
-            console.log('Data not found: ', country, category)
-            return null;
-        }
-
-        deathDataArray = Array.from(data['deaths'].dates, date => deathData[date]);
-        confirmedDataArray = Array.from(data['confirmed'].dates, date => confirmedData[date]);
-
-        if (metric === 'change') {
-            deathDataArray = computeDailyChange(deathDataArray);
-            confirmedDataArray = computeDailyChange(confirmedDataArray);
-        }
-
-        output = arrayDiv(deathDataArray, confirmedDataArray);
-    } else {
-        let dataCountry = findCountryData(country, category);
-
-        if (!dataCountry) {
-            console.log('Data not found: ', country, category)
-            return null;
-        }
-
-        output = Array.from(data['deaths'].dates, date => dataCountry[date]);
+    if (!dataCountry) {
+        console.log('Data not found: ', country, category)
+        return null;
     }
 
-    if (metric === 'change' && category !== 'fatality rate') {
+    let output = Array.from(data['deaths'].dates, date => dataCountry[date]);
+
+    if (metric === 'change') {
         output = computeDailyChange(output);
     }
 
-    if (relative && category !== 'fatality rate') {
+    if (relative) {
         let pop = getPopulation(country);
         if (pop == null) {
             return null;
