@@ -19,23 +19,6 @@
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="css/main.css">
-
-        <!-- Matomo -->
-        <script type="text/javascript">
-            var _paq = window._paq = window._paq || [];
-            /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-            _paq.push(['disableCookies']);
-            _paq.push(['trackPageView']);
-            _paq.push(['enableLinkTracking']);
-            (function() {
-                var u="//cboehm.uber.space/matomo/";
-                _paq.push(['setTrackerUrl', u+'matomo.php']);
-                _paq.push(['setSiteId', '1']);
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-            })();
-        </script>
-        <!-- End Matomo Code -->
     </head>
 
     <body>
@@ -94,27 +77,6 @@
                 That means the three days before and after the date are included in the calculation.
                 For the first and most recent three days of the observation period this cannot be computed, so those
                 days are not shown on the graph when smoothing is applied.
-            </div>
-
-
-            <h2 class="pt-5">Privacy</h2>
-            <div class="pt-1">
-                This website is using a self-hosted version of
-                <a href="https://matomo.org">
-                    Matomo
-                </a>
-                for basic visitor analytics.
-                All data is anonymized and processing and storage is performed on servers in Germany.
-                No cookies are used for tracking.
-            </div>
-
-            <div class="mt-1">
-                If you still want to opt out of all tracking, you can do so by unchecking the box below:
-                <div class="text-center">
-                    <iframe style="border: 0; width: 90%;"
-                        src="matomo/index.php?module=CoreAdminHome&action=optOut&language=en&backgroundColor=ffffff&fontColor=&fontSize=16px&fontFamily=Helvetica">
-                    </iframe>
-                </div>
             </div>
 
              <footer class="mt-5 mb-4 pt-4 border-top">
